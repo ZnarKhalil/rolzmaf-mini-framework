@@ -1,0 +1,13 @@
+<?php
+namespace App\Controllers{{namespace}};
+
+use Core\Http\Contracts\RequestInterface;
+use Core\Http\Response;
+
+class {{class}}
+{
+    public function index(RequestInterface $request): Response
+    {
+        return (new Response())->write('Hello from {{class}}@index');
+    }
+}

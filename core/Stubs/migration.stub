@@ -1,0 +1,14 @@
+<?php
+declare(strict_types=1);
+
+return new class {
+    public function up(): void
+    {
+        // TODO: write schema changes here
+    }
+
+    public function down(): void
+    {
+        // TODO: rollback changes here
+    }
+};

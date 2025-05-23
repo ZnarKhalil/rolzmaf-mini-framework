@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+
+require __DIR__ . '/bootstrap.php';
+
+use Core\Console\CommandKernel;
+use App\Console\Commands\ExampleCommand;
+use Core\Console\Commands\MigrateCommand;
+use Core\Console\Commands\MakeMigrationCommand;
+use Core\Console\Commands\MakeControllerCommand;
+use Core\Console\Commands\MigrateRollbackCommand;
+
+$kernel = new CommandKernel();
+
+$kernel->register(new MakeMigrationCommand());
+$kernel->register(new MigrateCommand());
+$kernel->register(new MigrateRollbackCommand());
+$kernel->register(new MakeControllerCommand());
+// Register commands manually for now (auto-discovery to be added)
+$kernel->register(new ExampleCommand());
+
+$kernel->run($argv);

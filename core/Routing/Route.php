@@ -1,0 +1,12 @@
+<?php
+namespace Core\Routing;
+
+class Route
+{
+    public function __construct(
+        public readonly string $method,
+        public readonly string $uri,
+        public readonly array $action, // [Controller::class, 'method']
+        public readonly array $middleware = []
+    ) {}
+}
