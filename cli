@@ -10,6 +10,8 @@ use Core\Console\Commands\MigrateCommand;
 use Core\Console\Commands\MakeMigrationCommand;
 use Core\Console\Commands\MakeControllerCommand;
 use Core\Console\Commands\MigrateRollbackCommand;
+use Core\Console\Commands\MakeModelCommand;
+use Core\Console\Commands\MakeMiddlewareCommand;
 
 $kernel = new CommandKernel();
 
@@ -17,6 +19,8 @@ $kernel->register(new MakeMigrationCommand());
 $kernel->register(new MigrateCommand());
 $kernel->register(new MigrateRollbackCommand());
 $kernel->register(new MakeControllerCommand());
+$kernel->register(new MakeModelCommand());
+$kernel->register(new MakeMiddlewareCommand());
 // Register commands manually for now (auto-discovery to be added)
 $kernel->register(new ExampleCommand());
 

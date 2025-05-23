@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Middlewares{{namespace}};
+
+use Core\Http\Contracts\RequestInterface;
+use Core\Http\Contracts\ResponseInterface;
+use Core\Http\Response;
+use Core\Middleware\MiddlewareInterface;
+
+class {{class}} implements MiddlewareInterface
+{
+    public function process(RequestInterface $request, callable $next): ResponseInterface
+    {
+        // Your middleware logic here
+
+        return $next($request);
+    }
+}

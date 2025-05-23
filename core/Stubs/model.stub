@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Models{{namespace}};
+
+use Core\ORM\Model;
+
+class {{class}} extends Model
+{
+    protected static array $allowedColumns = [
+        'id'
+        // Add your table columns here
+    ];
+
+    public static function table(): string
+    {
+        return '{{table}}';
+    }
+
+    public static function primaryKey(): string
+    {
+        return 'id';
+    }
+}
