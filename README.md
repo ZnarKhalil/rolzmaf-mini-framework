@@ -1,4 +1,4 @@
-# PHP mini Framework
+# Rolzmaf mini Framework
 
 Rolzmaf is a lightweight, modern PHP framework inspired by Laravel and built completely from the ground up as a **learning project**.  
 The main goal is to understand how frameworks work internally — from routing, to ORM, to migrations — by implementing the core features ourselves.
@@ -52,8 +52,8 @@ The main goal is to understand how frameworks work internally — from routing, 
 “⚠️ This framework is meant for experimentation. Use at your own risk in production.”
 
 ```bash
-git clone https://github.com/yourusername/rolzmaf.git
-cd rolzmaf
+git clone https://github.com/ZnarKhalil/rolzmaf-mini-framework.git
+cd rolzmaf-mini-framework
 composer install
 cp .env.example .env
 ```
@@ -65,8 +65,16 @@ Update your .env with database credentials.
 
 ```php
 // routes/web.php
-$router->get('/', [ExampleController::class, 'index'])
-       ->middleware(\App\Middlewares\CheckLocale::class);
+return function (Router $router) {
+    $router->addGlobalMiddleware(SessionMiddleware::class);
+    $router->addGlobalMiddleware(CsrfMiddleware::class);
+
+    $router->get('/', [ExampleController::class, 'index'])
+           ->middleware();
+
+    $router->get('/about', [ExampleController::class, 'about'])
+           ->middleware();
+};
 ```
 
 - **Controllers**
@@ -131,9 +139,9 @@ class User extends Model {
 ## 📦 CLI Generators
 
 ```bash
-php cli make:controller Blog/PostController
-php cli make:model Blog/Post
-php cli make:middleware Admin/VerifyAdmin
+php rolzmaf make:controller Blog/PostController
+php rolzmaf make:model Blog/Post
+php rolzmaf make:middleware Admin/VerifyAdmin
 ```
 
 Supports nested folders and auto-namespace generation.
@@ -171,4 +179,4 @@ Rolzmaf exists to:
 
 ## 📄 License
 
-MIT License.
+This framework is open-sourced software licensed under the [MIT license](https://opensource.org/license/MIT).
