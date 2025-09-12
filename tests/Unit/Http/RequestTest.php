@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Tests\Http;
+namespace Tests\Unit\Http;
 
 use Core\Http\Request;
 use PHPUnit\Framework\Attributes\CoversClass;
