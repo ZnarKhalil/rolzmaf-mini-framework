@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Core\Schema;
@@ -31,7 +30,6 @@ class Schema
         return self::$instance ??= new self();
     }
 
-
     public function create(string $table, \Closure $callback): void
     {
         $def = new Table();
@@ -40,7 +38,6 @@ class Schema
         $sql = $this->grammar->compileCreate($table, $def);
         $this->pdo->exec($sql);
     }
-
 
     public function dropIfExists(string $table): void
     {
