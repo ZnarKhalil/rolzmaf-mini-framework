@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Routing;
@@ -18,7 +24,7 @@ final class RouterTest extends TestCase
         $router->get('/', [\App\Controllers\ExampleController::class, 'index'])->middleware();
 
         $_SERVER['REQUEST_METHOD'] = 'GET';
-        $_SERVER['REQUEST_URI'] = '/';
+        $_SERVER['REQUEST_URI']    = '/';
 
         $route = $router->resolve(new \Core\Http\Request());
 

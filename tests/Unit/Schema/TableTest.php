@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Schema;

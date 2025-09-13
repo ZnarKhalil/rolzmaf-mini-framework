@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
+declare(strict_types=1);
+
 namespace App\Models;
 
-use App\Models\User;
 use Core\ORM\Relations\BelongsTo;
 
 class Post extends \Core\ORM\Model

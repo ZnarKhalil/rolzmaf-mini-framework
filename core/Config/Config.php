@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
 declare(strict_types=1);
 
 namespace Core\Config;
@@ -16,7 +22,7 @@ class Config
 
     public static function get(string $key, mixed $default = null): mixed
     {
-        $keys = explode('.', $key);
+        $keys  = explode('.', $key);
         $value = self::$items;
 
         foreach ($keys as $segment) {

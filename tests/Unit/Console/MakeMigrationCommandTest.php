@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Console;
@@ -15,8 +21,8 @@ final class MakeMigrationCommandTest extends TestCase
     public function test_it_creates_migration_file(): void
     {
         $command = new MakeMigrationCommand();
-        $name = 'test_users_table';
-        $input = new Input([$name]);
+        $name    = 'test_users_table';
+        $input   = new Input([$name]);
 
         ob_start();
         $exitCode = $command->execute($input);

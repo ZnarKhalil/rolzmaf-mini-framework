@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Middleware;
@@ -17,9 +23,9 @@ final class CsrfMiddlewareTest extends TestCase
     public function allows_get_requests_without_token(): void
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
-        $middleware = new CsrfMiddleware();
+        $middleware                = new CsrfMiddleware();
 
-        $result = $middleware->process(new Request(), fn() => new Response());
+        $result = $middleware->process(new Request(), fn () => new Response());
         $this->assertInstanceOf(Response::class, $result);
     }
 
@@ -27,13 +33,13 @@ final class CsrfMiddlewareTest extends TestCase
     public function blocks_post_with_missing_token(): void
     {
         $_SERVER['REQUEST_METHOD'] = 'POST';
-        $_POST = [];
+        $_POST                     = [];
 
         $middleware = new CsrfMiddleware();
-        $response = $middleware->process(new Request(), fn() => new Response());
+        $response   = $middleware->process(new Request(), fn () => new Response());
 
         $reflection = new \ReflectionClass($response);
-        $status = $reflection->getProperty('status');
+        $status     = $reflection->getProperty('status');
         $status->setAccessible(true);
 
         $this->assertSame(403, $status->getValue($response));
@@ -43,11 +49,11 @@ final class CsrfMiddlewareTest extends TestCase
     public function passes_when_token_matches(): void
     {
         $_SERVER['REQUEST_METHOD'] = 'POST';
-        $token = CsrfMiddleware::token();
-        $_POST['_token'] = $token;
+        $token                     = CsrfMiddleware::token();
+        $_POST['_token']           = $token;
 
         $middleware = new CsrfMiddleware();
-        $result = $middleware->process(new Request(), fn() => new Response());
+        $result     = $middleware->process(new Request(), fn () => new Response());
 
         $this->assertInstanceOf(Response::class, $result);
     }

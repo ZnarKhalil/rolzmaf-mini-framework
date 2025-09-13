@@ -1,16 +1,25 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
+declare(strict_types=1);
+
 namespace Core\Storage;
 
 class DiskStorage implements StorageInterface
 {
     public function __construct(
         private readonly string $root = __DIR__ . '/../../storage/files'
-    ) {}
+    ) {
+    }
 
     public function put(string $path, string $contents): bool
     {
         $fullPath = $this->fullPath($path);
-        $dir = dirname($fullPath);
+        $dir      = dirname($fullPath);
 
         if (!is_dir($dir)) {
             mkdir($dir, 0775, true);

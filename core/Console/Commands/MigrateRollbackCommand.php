@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
+declare(strict_types=1);
+
 namespace Core\Console\Commands;
 
 use Core\Console\CommandInterface;
@@ -22,24 +30,25 @@ class MigrateRollbackCommand implements CommandInterface
     {
         $pdo = DatabaseConfig::makePdo();
 
-        $pdo->exec("
+        $pdo->exec('
             CREATE TABLE IF NOT EXISTS migrations (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 batch INT NOT NULL,
                 migrated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
-        ");
+        ');
 
-        $lastBatch = (int) $pdo->query("SELECT MAX(batch) FROM migrations")->fetchColumn();
+        $lastBatch = (int) $pdo->query('SELECT MAX(batch) FROM migrations')->fetchColumn();
 
-        $stmt = $pdo->prepare("SELECT name FROM migrations WHERE batch = :batch ORDER BY id DESC");
+        $stmt = $pdo->prepare('SELECT name FROM migrations WHERE batch = :batch ORDER BY id DESC');
         $stmt->execute(['batch' => $lastBatch]);
 
         $migrations = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         if (!$migrations) {
             echo "ℹ️  Nothing to rollback.\n";
+
             return 0;
         }
 
@@ -51,7 +60,7 @@ class MigrateRollbackCommand implements CommandInterface
                 $migration->down();
             }
 
-            $pdo->prepare("DELETE FROM migrations WHERE name = ?")->execute([$name]);
+            $pdo->prepare('DELETE FROM migrations WHERE name = ?')->execute([$name]);
             echo "✅  Rolled back: $name\n";
         }
 

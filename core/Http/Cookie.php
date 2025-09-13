@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
 declare(strict_types=1);
 
 namespace Core\Http;
@@ -8,9 +14,9 @@ class Cookie
     public static function set(string $name, string $value, int $minutes = 60): void
     {
         setcookie($name, $value, [
-            'expires' => time() + ($minutes * 60),
-            'path' => '/',
-            'secure' => isset($_SERVER['HTTPS']),
+            'expires'  => time() + ($minutes * 60),
+            'path'     => '/',
+            'secure'   => isset($_SERVER['HTTPS']),
             'httponly' => true,
             'samesite' => 'Lax',
         ]);

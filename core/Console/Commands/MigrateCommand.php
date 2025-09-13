@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
+declare(strict_types=1);
+
 namespace Core\Console\Commands;
 
 use Core\Console\CommandInterface;
@@ -20,7 +28,7 @@ class MigrateCommand implements CommandInterface
 
     public function execute(Input $input): int
     {
-        $pdo = DatabaseConfig::makePdo();
+        $pdo    = DatabaseConfig::makePdo();
         $runner = new MigrationRunner($pdo);
         $runner->run();
 

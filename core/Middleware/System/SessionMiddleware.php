@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
 declare(strict_types=1);
 
 namespace Core\Middleware\System;
@@ -13,6 +19,7 @@ class SessionMiddleware implements MiddlewareInterface
     public function process(RequestInterface $request, callable $next): ResponseInterface
     {
         Session::start();
+
         return $next($request);
     }
 }

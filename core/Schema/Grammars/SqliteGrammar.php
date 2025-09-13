@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
+declare(strict_types=1);
+
 namespace Core\Schema\Grammars;
 
 use Core\Schema\Table;
@@ -17,10 +25,10 @@ class SqliteGrammar implements GrammarInterface
                     $sql .= "({$col->length})";
                 }
                 if ($col->nullable === false) {
-                    $sql .= " NOT NULL";
+                    $sql .= ' NOT NULL';
                 }
                 if ($col->unique) {
-                    $sql .= " UNIQUE";
+                    $sql .= ' UNIQUE';
                 }
             }
 

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
+declare(strict_types=1);
+
 namespace Tests\Unit\ORM;
 
 use Core\ORM\Model;
@@ -19,6 +26,7 @@ class TestModel extends Model
         if (self::$testPdo === null) {
             throw new \RuntimeException('Test PDO instance not set. Call TestModel::setTestPdo() first.');
         }
+
         return new \Core\ORM\QueryBuilder(new static(), self::$testPdo);
     }
-} 
+}

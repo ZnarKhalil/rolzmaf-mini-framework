@@ -1,11 +1,19 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
+declare(strict_types=1);
+
 namespace Core\Schema;
 
-use PDO;
 use Core\Database\DatabaseConfig;
+use Core\Schema\Grammars\GrammarInterface;
 use Core\Schema\Grammars\MySqlGrammar;
 use Core\Schema\Grammars\SqliteGrammar;
-use Core\Schema\Grammars\GrammarInterface;
+use PDO;
 
 class Schema
 {
@@ -15,10 +23,10 @@ class Schema
 
     public function __construct()
     {
-        $this->pdo = DatabaseConfig::makePdo();
+        $this->pdo     = DatabaseConfig::makePdo();
         $this->grammar = match ($_ENV['DB_DRIVER'] ?? 'mysql') {
             'sqlite' => new SqliteGrammar(),
-            default => new MySqlGrammar(),
+            default  => new MySqlGrammar(),
         };
     }
 
@@ -27,7 +35,7 @@ class Schema
         return self::$instance ??= new self();
     }
 
-    
+
     public function create(string $table, \Closure $callback): void
     {
         $def = new Table();

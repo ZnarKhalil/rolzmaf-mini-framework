@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
+declare(strict_types=1);
+
 namespace Core\Database;
 
 use PDO;
@@ -11,9 +19,9 @@ class DatabaseConfig
         $driver = $_ENV['DB_DRIVER'] ?? 'mysql';
 
         return match ($driver) {
-            'mysql' => self::mysql(),
+            'mysql'  => self::mysql(),
             'sqlite' => self::sqlite(),
-            default => throw new RuntimeException("Unsupported DB driver: {$driver}"),
+            default  => throw new RuntimeException("Unsupported DB driver: {$driver}"),
         };
     }
 
@@ -26,13 +34,15 @@ class DatabaseConfig
         $pass = $_ENV['DB_PASS'] ?? '';
 
         $dsn = "mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4";
+
         return new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
     }
 
     private static function sqlite(): PDO
     {
         $path = $_ENV['DB_PATH'] ?? __DIR__ . '/../../storage/database.sqlite';
-        $dsn = "sqlite:" . $path;
+        $dsn  = 'sqlite:' . $path;
+
         return new PDO($dsn, null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
     }
 }

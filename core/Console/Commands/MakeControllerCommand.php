@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
+declare(strict_types=1);
+
 namespace Core\Console\Commands;
 
 use Core\Console\CommandInterface;
@@ -21,20 +29,22 @@ class MakeControllerCommand implements CommandInterface
         $rawName = $input->argument(0);
         if (!$rawName) {
             echo "❌  Controller name is required.\n";
+
             return 1;
         }
 
         // Support nested path
-        $parts = explode('/', str_replace('\\', '/', $rawName));
-        $className = array_pop($parts);
+        $parts        = explode('/', str_replace('\\', '/', $rawName));
+        $className    = array_pop($parts);
         $relativePath = implode('/', $parts);
-        $namespace = $relativePath ? '\\' . str_replace('/', '\\', $relativePath) : '';
+        $namespace    = $relativePath ? '\\' . str_replace('/', '\\', $relativePath) : '';
 
-        $dir = __DIR__ . '/../../../app/Controllers/' . $relativePath;
+        $dir  = __DIR__ . '/../../../app/Controllers/' . $relativePath;
         $file = $dir . '/' . $className . '.php';
 
         if (file_exists($file)) {
             echo "⚠️  Controller already exists: $file\n";
+
             return 1;
         }
 
@@ -42,7 +52,7 @@ class MakeControllerCommand implements CommandInterface
             mkdir($dir, 0777, true);
         }
 
-        $stub = file_get_contents(__DIR__ . '/../../stubs/controller.stub');
+        $stub    = file_get_contents(__DIR__ . '/../../stubs/controller.stub');
         $content = str_replace(
             ['{{class}}', '{{namespace}}'],
             [$className, $namespace],

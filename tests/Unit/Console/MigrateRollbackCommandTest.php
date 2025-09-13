@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Console;
@@ -15,7 +21,7 @@ final class MigrateRollbackCommandTest extends TestCase
     public function test_it_handles_no_migrations_gracefully(): void
     {
         $command = new MigrateRollbackCommand();
-        $input = new Input([]);
+        $input   = new Input([]);
 
         ob_start();
         $exitCode = $command->execute($input);

@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
 declare(strict_types=1);
 
 namespace Core\Support;
@@ -24,7 +30,7 @@ class ExceptionHandler
     {
         Logger::error("Uncaught Exception: {$e->getMessage()} in {$e->getFile()} on line {$e->getLine()}");
         http_response_code(500);
-        echo "Internal Server Error";
+        echo 'Internal Server Error';
     }
 
     public static function handleShutdown(): void

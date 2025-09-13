@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
 declare(strict_types=1);
 
 namespace Core\Session;
@@ -24,12 +30,14 @@ class Session
     public static function get(string $key, mixed $default = null): mixed
     {
         self::start();
+
         return $_SESSION[$key] ?? $default;
     }
 
     public static function has(string $key): bool
     {
         self::start();
+
         return isset($_SESSION[$key]);
     }
 
@@ -42,6 +50,7 @@ class Session
     public static function all(): array
     {
         self::start();
+
         return $_SESSION;
     }
 
@@ -49,7 +58,7 @@ class Session
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_destroy();
-            $_SESSION = [];
+            $_SESSION      = [];
             self::$started = false;
         }
     }

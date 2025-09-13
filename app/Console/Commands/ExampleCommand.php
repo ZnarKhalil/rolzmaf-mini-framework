@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use Core\Console\CommandInterface;
@@ -20,6 +28,7 @@ class ExampleCommand implements CommandInterface
     {
         $name = $input->argument(0, 'Developer');
         echo "Hello, $name!\n";
+
         return 0;
     }
 }

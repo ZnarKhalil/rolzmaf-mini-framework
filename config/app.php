@@ -1,7 +1,15 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
+declare(strict_types=1);
+
 return [
-    'name' => $_ENV['APP_NAME'] ?? 'Rolzmaf',
-    'env' => $_ENV['APP_ENV'] ?? 'local',
+    'name'  => $_ENV['APP_NAME']  ?? 'Rolzmaf',
+    'env'   => $_ENV['APP_ENV']   ?? 'local',
     'debug' => $_ENV['APP_DEBUG'] ?? true,
-    'url' => $_ENV['APP_URL'] ?? 'http://localhost',
+    'url'   => $_ENV['APP_URL']   ?? 'http://localhost',
 ];

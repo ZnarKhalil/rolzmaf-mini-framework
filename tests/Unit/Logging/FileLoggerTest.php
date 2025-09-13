@@ -1,14 +1,19 @@
 <?php
+
+/**
+ * Rolzmaf — PHP mini framework
+ * (c) 2025 Znar Khalil
+ */
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Logging;
 
+use Core\Logging\Drivers\FileLogger;
+use Core\Logging\Logger;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Core\Logging\Logger;
-use Core\Logging\Drivers\FileLogger;
-use PHPUnit\Framework\Attributes\CoversClass;
-
 
 #[CoversClass(FileLogger::class)]
 final class FileLoggerTest extends TestCase
@@ -29,7 +34,7 @@ final class FileLoggerTest extends TestCase
     #[Test]
     public function it_logs_custom_level_message(): void
     {
-        Logger::log('ERROR','This is a test log message');
+        Logger::log('ERROR', 'This is a test log message');
 
         $this->assertFileExists($this->logFile);
         $contents = file_get_contents($this->logFile);
