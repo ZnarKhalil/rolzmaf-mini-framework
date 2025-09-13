@@ -2,11 +2,6 @@
 
 declare(strict_types=1);
 
-$header = <<<'HEADER'
-Rolzmaf — PHP mini framework
-(c) 2025 Znar Khalil
-HEADER;
-
 $finder = PhpCsFixer\Finder::create()
     ->in([
         __DIR__ . '/core',
@@ -45,13 +40,5 @@ return new PhpCsFixer\Config()
         // Helpful "risky" but useful rules
         'simplified_null_return' => true,
         'void_return' => true,
-
-        // Header
-        'header_comment' => [
-            'header' => $header,
-            'comment_type' => 'PHPDoc',
-            'location' => 'after_open',
-            'separate' => 'both',
-        ],
     ])
     ->setFinder($finder);
