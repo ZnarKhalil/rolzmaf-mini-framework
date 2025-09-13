@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Core\Console\Commands;
 
 use Core\Console\CommandInterface;
@@ -22,20 +24,22 @@ class MakeMiddlewareCommand implements CommandInterface
         $name = $input->argument(0);
         if (!$name) {
             echo "❌  Middleware name is required.\n";
+
             return 1;
         }
 
-        $rawName = $input->argument(0);
-        $parts = explode('/', str_replace('\\', '/', $rawName));
-        $className = array_pop($parts);
+        $rawName      = $input->argument(0);
+        $parts        = explode('/', str_replace('\\', '/', $rawName));
+        $className    = array_pop($parts);
         $relativePath = implode('/', $parts);
-        $namespace = $relativePath ? '\\' . str_replace('/', '\\', $relativePath) : '';
+        $namespace    = $relativePath ? '\\' . str_replace('/', '\\', $relativePath) : '';
 
-        $dir = __DIR__ . '/../../../app/Middlewares/' . $relativePath;
+        $dir  = __DIR__ . '/../../../app/Middlewares/' . $relativePath;
         $file = $dir . '/' . $className . '.php';
 
         if (file_exists($file)) {
             echo "⚠️  Middleware already exists: $file\n";
+
             return 1;
         }
 
@@ -43,7 +47,7 @@ class MakeMiddlewareCommand implements CommandInterface
             mkdir($dir, 0775, true);
         }
 
-        $stub = file_get_contents(__DIR__ . '/../../stubs/middleware.stub');
+        $stub    = file_get_contents(__DIR__ . '/../../stubs/middleware.stub');
         $content = str_replace(
             ['{{class}}', '{{namespace}}'],
             [$className, $namespace],
@@ -52,6 +56,7 @@ class MakeMiddlewareCommand implements CommandInterface
 
         file_put_contents($file, $content);
         echo "✅  Middleware created: app/Middlewares/{$className}.php\n";
+
         return 0;
     }
 }

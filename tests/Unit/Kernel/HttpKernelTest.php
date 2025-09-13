@@ -1,14 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Kernel;
 
+use Core\Http\Contracts\ResponseInterface;
 use Core\Http\Request;
 use Core\Kernel\HttpKernel;
 use Core\Routing\Router;
-use Core\Http\Contracts\RequestInterface;
-use Core\Http\Contracts\ResponseInterface;
-use Core\Middleware\MiddlewareInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -46,20 +45,21 @@ final class HttpKernelTest extends TestCase
 
         $router->addGlobalMiddleware(\App\Middlewares\GlobalMiddleware::class);
 
-        $router->get('/test', [new class {
-            public function handle(): ResponseInterface {
+        $router->get('/test', [new class () {
+            public function handle(): ResponseInterface
+            {
                 return new \Core\Http\Response();
             }
         }, 'handle'])->middleware(\App\Middlewares\RouteMiddleware::class);
 
         $_SERVER['REQUEST_METHOD'] = 'GET';
-        $_SERVER['REQUEST_URI'] = '/test';
+        $_SERVER['REQUEST_URI']    = '/test';
 
-        $kernel = new HttpKernel($router);
+        $kernel   = new HttpKernel($router);
         $response = $kernel->handle(new Request());
 
         $reflection = new \ReflectionClass($response);
-        $content = $reflection->getProperty('content');
+        $content    = $reflection->getProperty('content');
         $content->setAccessible(true);
 
         $this->assertSame(' + route + global', $content->getValue($response));
@@ -72,7 +72,7 @@ final class HttpKernelTest extends TestCase
         $kernel = new HttpKernel(new Router());
 
         $_SERVER['REQUEST_METHOD'] = 'GET';
-        $_SERVER['REQUEST_URI'] = '/missing';
+        $_SERVER['REQUEST_URI']    = '/missing';
 
         $request = new Request();
 
@@ -81,7 +81,7 @@ final class HttpKernelTest extends TestCase
 
         // Assert: Check response status via reflection
         $reflection = new \ReflectionClass($response);
-        $status = $reflection->getProperty('status');
+        $status     = $reflection->getProperty('status');
         $status->setAccessible(true);
 
         $this->assertSame(404, $status->getValue($response));

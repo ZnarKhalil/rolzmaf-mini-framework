@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Http;
@@ -14,10 +15,10 @@ final class RequestTest extends TestCase
     protected function setUp(): void
     {
         $_SERVER['REQUEST_METHOD'] = 'POST';
-        $_SERVER['REQUEST_URI'] = '/test/uri?x=1';
-        $_GET = ['x' => '1'];
-        $_POST = ['name' => 'Test'];
-        $_SERVER['HTTP_X_CUSTOM'] = 'ABC';
+        $_SERVER['REQUEST_URI']    = '/test/uri?x=1';
+        $_GET                      = ['x' => '1'];
+        $_POST                     = ['name' => 'Test'];
+        $_SERVER['HTTP_X_CUSTOM']  = 'ABC';
     }
 
     #[Test]

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Core\Middleware;
 
 use Core\Http\Contracts\RequestInterface;
@@ -20,7 +23,7 @@ class MiddlewarePipeline
     {
         $pipeline = array_reduce(
             array_reverse($this->middleware),
-            fn(callable $next, MiddlewareInterface $middleware) => fn(RequestInterface $req) => $middleware->process($req, $next),
+            fn (callable $next, MiddlewareInterface $middleware) => fn (RequestInterface $req) => $middleware->process($req, $next),
             $coreHandler
         );
 

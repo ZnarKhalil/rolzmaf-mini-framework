@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Console;
@@ -6,6 +7,7 @@ namespace Tests\Unit\Console;
 use Core\Console\Commands\MigrateRollbackCommand;
 use Core\Console\Input;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(MigrateRollbackCommand::class)]
@@ -15,7 +17,7 @@ final class MigrateRollbackCommandTest extends TestCase
     public function test_it_handles_no_migrations_gracefully(): void
     {
         $command = new MigrateRollbackCommand();
-        $input = new Input([]);
+        $input   = new Input([]);
 
         ob_start();
         $exitCode = $command->execute($input);

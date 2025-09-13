@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Core\Session;
@@ -18,12 +19,14 @@ class Flash
         Session::start();
         $value = $_SESSION[self::$flashKey][$key] ?? $default;
         unset($_SESSION[self::$flashKey][$key]);
+
         return $value;
     }
 
     public static function has(string $key): bool
     {
         Session::start();
+
         return isset($_SESSION[self::$flashKey][$key]);
     }
 
@@ -32,6 +35,7 @@ class Flash
         Session::start();
         $data = $_SESSION[self::$flashKey] ?? [];
         unset($_SESSION[self::$flashKey]);
+
         return $data;
     }
 }

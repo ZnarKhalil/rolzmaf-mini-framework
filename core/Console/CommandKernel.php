@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Core\Console;
 
 class CommandKernel
@@ -14,7 +17,7 @@ class CommandKernel
     public function run(array $argv): void
     {
         $input = new Input(array_slice($argv, 2));
-        $name = $argv[1] ?? null;
+        $name  = $argv[1] ?? null;
 
         if (!$name || !isset($this->commands[$name])) {
             $this->listCommands();

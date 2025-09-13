@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Core\Database;
 
 use PDO;
@@ -10,7 +13,7 @@ class MigrationRunner
 
     public function __construct(PDO $pdo, string $migrationPath = __DIR__ . '/../../database/migrations')
     {
-        $this->pdo = $pdo;
+        $this->pdo           = $pdo;
         $this->migrationPath = $migrationPath;
         $this->createMigrationsTable();
     }
@@ -21,7 +24,7 @@ class MigrationRunner
         sort($files);
 
         $applied = $this->getAppliedMigrations();
-        $batch = $this->getNextBatchNumber();
+        $batch   = $this->getNextBatchNumber();
 
         foreach ($files as $file) {
             $name = basename($file);
@@ -43,7 +46,7 @@ class MigrationRunner
 
             try {
                 $migration->up();
-                $stmt = $this->pdo->prepare("INSERT INTO migrations (name, batch) VALUES (:name, :batch)");
+                $stmt = $this->pdo->prepare('INSERT INTO migrations (name, batch) VALUES (:name, :batch)');
                 $stmt->execute(['name' => $name, 'batch' => $batch]);
                 $this->pdo->commit();
 
@@ -61,25 +64,27 @@ class MigrationRunner
 
     private function createMigrationsTable(): void
     {
-        $this->pdo->exec("
+        $this->pdo->exec('
             CREATE TABLE IF NOT EXISTS migrations (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 batch INT NOT NULL,
                 migrated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
-        ");
+        ');
     }
 
     private function getAppliedMigrations(): array
     {
-        $stmt = $this->pdo->query("SELECT name FROM migrations");
+        $stmt = $this->pdo->query('SELECT name FROM migrations');
+
         return $stmt ? $stmt->fetchAll(PDO::FETCH_COLUMN) : [];
     }
 
     private function getNextBatchNumber(): int
     {
-        $stmt = $this->pdo->query("SELECT MAX(batch) FROM migrations");
+        $stmt = $this->pdo->query('SELECT MAX(batch) FROM migrations');
+
         return ((int) $stmt->fetchColumn()) + 1;
     }
 }

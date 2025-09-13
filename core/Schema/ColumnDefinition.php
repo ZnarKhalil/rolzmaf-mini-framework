@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Core\Schema;
 
 class ColumnDefinition
@@ -14,7 +17,8 @@ class ColumnDefinition
         public bool $isForeign = false,
         public ?string $references = null,
         public ?string $on = null,
-    ) {}
+    ) {
+    }
 
     public function toSql(): string
     {
@@ -25,22 +29,22 @@ class ColumnDefinition
         }
 
         if ($this->autoIncrement) {
-            $sql .= " AUTO_INCREMENT";
+            $sql .= ' AUTO_INCREMENT';
         }
 
         if ($this->nullable === false) {
-            $sql .= " NOT NULL";
+            $sql .= ' NOT NULL';
         } else {
-            $sql .= " NULL";
+            $sql .= ' NULL';
         }
 
         if ($this->unique) {
-            $sql .= " UNIQUE";
+            $sql .= ' UNIQUE';
         }
 
         if ($this->primary) {
-            $sql .= " PRIMARY KEY";
-        }   
+            $sql .= ' PRIMARY KEY';
+        }
 
         return $sql;
     }
@@ -48,18 +52,21 @@ class ColumnDefinition
     public function nullable(): static
     {
         $this->nullable = true;
+
         return $this;
     }
 
     public function unique(): static
     {
         $this->unique = true;
+
         return $this;
     }
 
     public function primary(): static
     {
         $this->primary = true;
+
         return $this;
     }
 }

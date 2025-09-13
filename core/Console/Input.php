@@ -1,11 +1,15 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Core\Console;
 
 class Input
 {
     public function __construct(
         private readonly array $argv
-    ) {}
+    ) {
+    }
 
     public function argument(int $index, mixed $default = null): mixed
     {

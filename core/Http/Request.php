@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Core\Http;
 
 use Core\Http\Contracts\RequestInterface;
@@ -13,6 +16,7 @@ class Request implements RequestInterface
     public function uri(): string
     {
         $uri = $_SERVER['REQUEST_URI'] ?? '/';
+
         return strtok($uri, '?'); // strip query string
     }
 
@@ -32,7 +36,7 @@ class Request implements RequestInterface
 
         foreach ($_SERVER as $k => $v) {
             if (str_starts_with($k, 'HTTP_')) {
-                $name = strtolower(str_replace('_', '-', substr($k, 5)));
+                $name           = strtolower(str_replace('_', '-', substr($k, 5)));
                 $headers[$name] = $v;
             }
         }
@@ -47,6 +51,7 @@ class Request implements RequestInterface
     public function json(): array
     {
         $raw = file_get_contents('php://input');
+
         return json_decode($raw, true) ?? [];
     }
 

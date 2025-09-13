@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Core\Console\Commands;
 
 use Core\Console\CommandInterface;
@@ -21,11 +24,12 @@ class MakeMigrationCommand implements CommandInterface
         $name = $input->argument(0);
         if (!$name) {
             echo "❌  Migration name is required.\n";
+
             return 1;
         }
 
-        $timestamp = date('Y_m_d_His');
-        $filename = "{$timestamp}_{$name}.php";
+        $timestamp  = date('Y_m_d_His');
+        $filename   = "{$timestamp}_{$name}.php";
         $targetPath = __DIR__ . '/../../../database/migrations/' . $filename;
 
         $stub = file_get_contents(__DIR__ . '/../../stubs/migration.stub');
@@ -33,6 +37,7 @@ class MakeMigrationCommand implements CommandInterface
         file_put_contents($targetPath, $stub);
 
         echo "✅  Migration created: database/migrations/{$filename}\n";
+
         return 0;
     }
 }

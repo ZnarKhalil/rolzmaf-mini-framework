@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Core\Schema\Grammars;
 
 use Core\Schema\Table;

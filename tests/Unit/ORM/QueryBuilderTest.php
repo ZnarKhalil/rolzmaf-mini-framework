@@ -4,16 +4,21 @@ declare(strict_types=1);
 
 namespace Tests\Unit\ORM;
 
-use PHPUnit\Framework\TestCase;
 use Core\ORM\QueryBuilder;
-use Core\ORM\Model;
-use PHPUnit\Framework\Attributes\CoversClass;
 use PDO;
-use Tests\Unit\ORM\TestModel;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
 
-class DummyModel extends TestModel {
-    public static function table(): string { return 'dummies'; }
-    public static function primaryKey(): string { return 'id'; }
+class DummyModel extends TestModel
+{
+    public static function table(): string
+    {
+        return 'dummies';
+    }
+    public static function primaryKey(): string
+    {
+        return 'id';
+    }
 
     public static function allowedColumns(): array
     {
@@ -207,4 +212,4 @@ final class QueryBuilderTest extends TestCase
         $sql = $qb->toSql()['sql'];
         $this->assertStringContainsString('LEFT JOIN other_table ON dummies.id = other_table.dummy_id', $sql);
     }
-} 
+}

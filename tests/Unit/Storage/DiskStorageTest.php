@@ -1,12 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Storage;
 
 use Core\Storage\DiskStorage;
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
 #[CoversClass(DiskStorage::class)]
 final class DiskStorageTest extends TestCase
@@ -26,7 +27,7 @@ final class DiskStorageTest extends TestCase
     public function it_can_put_and_get_file(): void
     {
         $storage = new DiskStorage($this->root);
-        $path = 'test/file.txt';
+        $path    = 'test/file.txt';
         $content = 'Hello world';
 
         $storage->put($path, $content);
@@ -38,7 +39,7 @@ final class DiskStorageTest extends TestCase
     public function it_can_delete_file(): void
     {
         $storage = new DiskStorage($this->root);
-        $path = 'delete/me.txt';
+        $path    = 'delete/me.txt';
 
         $storage->put($path, 'delete me');
         $this->assertTrue($storage->exists($path));
@@ -68,10 +69,14 @@ final class DiskStorageTest extends TestCase
 
     private function deleteDirectory(string $dir): void
     {
-        if (!is_dir($dir)) return;
+        if (!is_dir($dir)) {
+            return;
+        }
 
         foreach (scandir($dir) as $file) {
-            if ($file === '.' || $file === '..') continue;
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
             $path = "$dir/$file";
             is_dir($path) ? $this->deleteDirectory($path) : unlink($path);
         }

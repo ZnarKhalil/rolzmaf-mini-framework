@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Schema;
@@ -14,7 +15,7 @@ final class ColumnDefinitionTest extends TestCase
     public function test_generates_basic_sql(): void
     {
         $column = new ColumnDefinition('name', 'VARCHAR', 255);
-        $sql = $column->toSql();
+        $sql    = $column->toSql();
 
         $this->assertStringContainsString('`name` VARCHAR(255)', $sql);
     }

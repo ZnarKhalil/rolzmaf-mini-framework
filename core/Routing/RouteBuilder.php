@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Core\Routing;
 
 class RouteBuilder
@@ -8,7 +11,8 @@ class RouteBuilder
         private string $uri,
         private array $action,
         private Router $router
-    ) {}
+    ) {
+    }
 
     public function middleware(string ...$middleware): void
     {

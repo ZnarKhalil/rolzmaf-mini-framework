@@ -1,12 +1,14 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Core\Routing;
 
 use Core\Http\Contracts\RequestInterface;
-use Core\Routing\Route;
 
 class Router
 {
-    private array $routes = [];
+    private array $routes           = [];
     private array $globalMiddleware = [];
 
     public function addGlobalMiddleware(string $middleware): void

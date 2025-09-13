@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Core\Kernel;
@@ -37,6 +38,7 @@ class HttpKernel
 
         return $pipeline->handle($request, function ($req) use ($route) {
             [$controller, $method] = $route->action;
+
             return (new $controller())->$method($req);
         });
     }

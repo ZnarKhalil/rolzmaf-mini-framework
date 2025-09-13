@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Core\Middleware\System;
@@ -13,6 +14,7 @@ class SessionMiddleware implements MiddlewareInterface
     public function process(RequestInterface $request, callable $next): ResponseInterface
     {
         Session::start();
+
         return $next($request);
     }
 }
