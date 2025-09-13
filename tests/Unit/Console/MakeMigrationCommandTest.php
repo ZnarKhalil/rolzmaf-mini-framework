@@ -12,6 +12,7 @@ namespace Tests\Unit\Console;
 use Core\Console\Commands\MakeMigrationCommand;
 use Core\Console\Input;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(MakeMigrationCommand::class)]
