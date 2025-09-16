@@ -9,8 +9,7 @@ use Core\Database\DatabaseConfig;
 abstract class Model
 {
     protected array $attributes            = [];
-    protected static array $allowedColumns = [];
-    public const ALLOWED_COLUMNS           = ['*', 'id', 'created_at', 'updated_at'];
+    protected static array $allowedColumns = ['*', 'id', 'created_at', 'updated_at'];
 
     public function __construct(array $attributes = [])
     {
@@ -46,7 +45,7 @@ abstract class Model
     public static function table(): string
     {
         // default to plural snake_case of class name
-        $class = (new \ReflectionClass(static::class))->getShortName();
+        $class = new \ReflectionClass(static::class)->getShortName();
 
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $class)) . 's';
     }

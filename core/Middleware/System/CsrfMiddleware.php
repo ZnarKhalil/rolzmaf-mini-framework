@@ -27,7 +27,7 @@ class CsrfMiddleware implements MiddlewareInterface
         $userToken = $request->input('_token') ?? $request->header('x-csrf-token');
 
         if (!$token || !$userToken || !hash_equals($token, $userToken)) {
-            return (new Response())->setStatus(403)->write('CSRF token mismatch');
+            return new Response()->setStatus(403)->write('CSRF token mismatch');
         }
 
         return $next($request);
