@@ -8,7 +8,7 @@ use Core\Http\Contracts\RequestInterface;
 
 class Router
 {
-    private array $routes = [];
+    private array $routes           = [];
     private array $globalMiddleware = [];
 
     public function addGlobalMiddleware(string $middleware): void
@@ -18,29 +18,33 @@ class Router
 
     public function get(string $uri, array $action): Route
     {
-        $route = new Route('GET', $uri, $action);
+        $route          = new Route('GET', $uri, $action);
         $this->routes[] = $route;
+
         return $route;
     }
 
     public function post(string $uri, array $action): Route
     {
-        $route = new Route('POST', $uri, $action);
+        $route          = new Route('POST', $uri, $action);
         $this->routes[] = $route;
+
         return $route;
     }
 
     public function put(string $uri, array $action): Route
     {
-        $route = new Route('PUT', $uri, $action);
+        $route          = new Route('PUT', $uri, $action);
         $this->routes[] = $route;
+
         return $route;
     }
 
     public function delete(string $uri, array $action): Route
     {
-        $route = new Route('DELETE', $uri, $action);
+        $route          = new Route('DELETE', $uri, $action);
         $this->routes[] = $route;
+
         return $route;
     }
 

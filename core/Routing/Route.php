@@ -24,6 +24,7 @@ class Route
     public function middleware(string ...$middleware): self
     {
         $this->middleware = array_merge($this->middleware, $middleware);
+
         return $this;
     }
 

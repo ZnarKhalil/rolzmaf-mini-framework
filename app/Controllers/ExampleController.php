@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\Post;
 use App\Models\User;
 use Core\Http\Response;
 
@@ -28,6 +27,6 @@ class ExampleController
 
     public function about(): Response
     {
-        return new Response()->setStatus(200)->write("About page");
+        return new Response()->setStatus(200)->write('About page');
     }
 }
