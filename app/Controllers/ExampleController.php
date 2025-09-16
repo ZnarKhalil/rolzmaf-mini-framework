@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\Post;
 use App\Models\User;
 use Core\Http\Response;
 
@@ -12,16 +11,6 @@ class ExampleController
 {
     public function index(): Response
     {
-        // // Your logic for the index method
-        // $posts = Post::query()
-        //     ->with('user')
-        //     ->limit(5)
-        //     ->fetch();
-
-        // foreach ($posts as $post) {
-        //     echo $post->title.PHP_EOL;
-        //     echo $post->user['name'].PHP_EOL; // eager-loaded as array
-        // }
         $user = User::query()
             ->with('posts')
             ->find(1);
@@ -36,9 +25,8 @@ class ExampleController
 
     }
 
-    public function about()
+    public function about(): Response
     {
-        // Your logic for the about method
-        return 'About Us';
+        return new Response()->setStatus(200)->write('About page');
     }
 }

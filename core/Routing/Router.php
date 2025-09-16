@@ -16,29 +16,36 @@ class Router
         $this->globalMiddleware[] = $middleware;
     }
 
-    public function get(string $uri, array $action): RouteBuilder
+    public function get(string $uri, array $action): Route
     {
-        return new RouteBuilder('GET', $uri, $action, $this);
-    }
-
-    public function post(string $uri, array $action): RouteBuilder
-    {
-        return new RouteBuilder('POST', $uri, $action, $this);
-    }
-
-    public function put(string $uri, array $action): RouteBuilder
-    {
-        return new RouteBuilder('PUT', $uri, $action, $this);
-    }
-
-    public function delete(string $uri, array $action): RouteBuilder
-    {
-        return new RouteBuilder('DELETE', $uri, $action, $this);
-    }
-
-    public function addRoute(Route $route): void
-    {
+        $route          = new Route('GET', $uri, $action);
         $this->routes[] = $route;
+
+        return $route;
+    }
+
+    public function post(string $uri, array $action): Route
+    {
+        $route          = new Route('POST', $uri, $action);
+        $this->routes[] = $route;
+
+        return $route;
+    }
+
+    public function put(string $uri, array $action): Route
+    {
+        $route          = new Route('PUT', $uri, $action);
+        $this->routes[] = $route;
+
+        return $route;
+    }
+
+    public function delete(string $uri, array $action): Route
+    {
+        $route          = new Route('DELETE', $uri, $action);
+        $this->routes[] = $route;
+
+        return $route;
     }
 
     public function resolve(RequestInterface $request): ?Route

@@ -24,7 +24,7 @@ class HttpKernel
         $route = $this->router->resolve($request);
 
         if (!$route) {
-            return (new Response())->setStatus(404)->write('Not Found');
+            return new Response()->setStatus(404)->write('Not Found');
         }
 
         $pipeline = new MiddlewarePipeline();
@@ -39,7 +39,7 @@ class HttpKernel
         return $pipeline->handle($request, function ($req) use ($route) {
             [$controller, $method] = $route->action;
 
-            return (new $controller())->$method($req);
+            return new $controller()->$method($req);
         });
     }
 }

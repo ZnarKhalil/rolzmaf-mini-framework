@@ -1,5 +1,9 @@
 # Rolzmaf mini Framework
 
+![CI](https://github.com/ZnarKhalil/rolzmaf-mini-framework/actions/workflows/ci.yml/badge.svg?event=pull_request)
+![PHP](https://img.shields.io/badge/php-8.4-blue)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Rolzmaf is a lightweight, modern PHP framework inspired by Laravel and built completely from the ground up as a **learning project**.  
 The main goal is to understand how frameworks work internally — from routing, to ORM, to migrations — by implementing the core features ourselves.
 
@@ -56,6 +60,10 @@ git clone https://github.com/ZnarKhalil/rolzmaf-mini-framework.git
 cd rolzmaf-mini-framework
 composer install
 cp .env.example .env
+
+mkdir -p storage/logs
+touch storage/logs/app.log
+chmod 755 storage/logs
 ```
 Update your .env with database credentials.
 

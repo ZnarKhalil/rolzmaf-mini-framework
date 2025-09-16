@@ -10,8 +10,8 @@ return function (Router $router) {
     $router->addGlobalMiddleware(CsrfMiddleware::class);
 
     $router->get('/', [ExampleController::class, 'index'])
-           ->middleware();
+        ->middleware();
 
     $router->get('/about', [ExampleController::class, 'about'])
-           ->middleware();
+        ->middleware();
 };

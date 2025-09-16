@@ -20,17 +20,17 @@ class Request implements RequestInterface
         return strtok($uri, '?'); // strip query string
     }
 
-    public function query(string $key = null, mixed $default = null): mixed
+    public function query(?string $key = null, mixed $default = null): mixed
     {
         return $key === null ? $_GET : ($_GET[$key] ?? $default);
     }
 
-    public function input(string $key = null, mixed $default = null): mixed
+    public function input(?string $key = null, mixed $default = null): mixed
     {
         return $key === null ? $_POST : ($_POST[$key] ?? $default);
     }
 
-    public function header(string $key = null, mixed $default = null): mixed
+    public function header(?string $key = null, mixed $default = null): mixed
     {
         $headers = [];
 
