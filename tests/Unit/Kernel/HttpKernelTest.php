@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Kernel;
 
-use Core\Http\Contracts\ResponseInterface;
 use Core\Http\Request;
 use Core\Kernel\HttpKernel;
 use Core\Routing\Router;
@@ -43,14 +42,22 @@ final class HttpKernelTest extends TestCase
             }
         ');
 
+        eval('
+            namespace App\Controllers;
+            use Core\Http\Contracts\RequestInterface;
+            use Core\Http\Contracts\ResponseInterface;
+            use Core\Http\Response;
+
+            class TestController {
+                public function handle(RequestInterface $request): ResponseInterface {
+                    return new Response();
+                }
+            }
+        ');
+
         $router->addGlobalMiddleware(\App\Middlewares\GlobalMiddleware::class);
 
-        $router->get('/test', [new class () {
-            public function handle(): ResponseInterface
-            {
-                return new \Core\Http\Response();
-            }
-        }, 'handle'])->middleware(\App\Middlewares\RouteMiddleware::class);
+        $router->get('/test', [\App\Controllers\TestController::class, 'handle'])->middleware(\App\Middlewares\RouteMiddleware::class);
 
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SERVER['REQUEST_URI']    = '/test';
@@ -68,7 +75,6 @@ final class HttpKernelTest extends TestCase
     #[Test]
     public function it_returns_404_for_unknown_route(): void
     {
-        // Arrange
         $kernel = new HttpKernel(new Router());
 
         $_SERVER['REQUEST_METHOD'] = 'GET';
@@ -76,10 +82,30 @@ final class HttpKernelTest extends TestCase
 
         $request = new Request();
 
-        // Act
         $response = $kernel->handle($request);
 
-        // Assert: Check response status via reflection
+        $reflection = new \ReflectionClass($response);
+        $status     = $reflection->getProperty('status');
+        $status->setAccessible(true);
+
+        $this->assertSame(404, $status->getValue($response));
+    }
+
+    #[Test]
+    public function it_returns_404_for_invalid_controller(): void
+    {
+        $router = new Router();
+        $router->get('/invalid', ['NonExistentController', 'nonExistentMethod']);
+
+        $kernel = new HttpKernel($router);
+
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['REQUEST_URI']    = '/invalid';
+
+        $request = new Request();
+
+        $response = $kernel->handle($request);
+
         $reflection = new \ReflectionClass($response);
         $status     = $reflection->getProperty('status');
         $status->setAccessible(true);

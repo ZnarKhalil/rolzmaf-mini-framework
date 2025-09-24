@@ -1,4 +1,5 @@
 # Rolzmaf mini Framework
+![rolzmaf.png](public/rolzmaf.png)
 
 ![CI](https://github.com/ZnarKhalil/rolzmaf-mini-framework/actions/workflows/ci.yml/badge.svg?event=pull_request)
 ![PHP](https://img.shields.io/badge/php-8.4-blue)
