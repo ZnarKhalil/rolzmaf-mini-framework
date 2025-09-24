@@ -33,4 +33,5 @@ return new PhpCsFixer\Config()
         'simplified_null_return' => true,
         'void_return' => true,
     ])
-    ->setFinder($finder);
+    ->setFinder($finder)
+    ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect());

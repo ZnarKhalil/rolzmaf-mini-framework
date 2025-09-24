@@ -38,6 +38,9 @@ class HttpKernel
 
         return $pipeline->handle($request, function ($req) use ($route) {
             [$controller, $method] = $route->action;
+            if (!class_exists($controller) || !method_exists($controller, $method)) {
+                return new Response()->setStatus(404)->write('Controller or method not found');
+            }
 
             return new $controller()->$method($req);
         });
