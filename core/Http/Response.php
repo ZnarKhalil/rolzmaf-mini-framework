@@ -43,4 +43,21 @@ class Response implements ResponseInterface
 
         echo $this->content;
     }
+
+    public function json(array|object $data, int $status = 200): static
+    {
+        $this->setStatus($status);
+        $this->setHeader('Content-Type', 'application/json; charset=utf-8');
+        $this->content = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        return $this;
+    }
+
+    public function redirect(string $to, int $status = 302): static
+    {
+        $this->setStatus($status);
+        $this->setHeader('Location', $to);
+
+        return $this;
+    }
 }

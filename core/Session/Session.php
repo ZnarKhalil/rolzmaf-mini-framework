@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Core\Session;
 
+use Core\Config\Config;
+
 class Session
 {
     protected static bool $started = false;
@@ -11,6 +13,24 @@ class Session
     public static function start(): void
     {
         if (!self::$started && session_status() !== PHP_SESSION_ACTIVE) {
+            $env    = (string) Config::get('env', 'local');
+            $appUrl = (string) Config::get('url', 'http://localhost');
+            $cfg    = (array) Config::get('cookie', []);
+
+            $schemeSecure = str_starts_with(strtolower($appUrl), 'https://');
+            $secure       = (bool) ($cfg['secure'] ?? ($env === 'production' || $schemeSecure));
+            $httpOnly     = (bool) ($cfg['httponly'] ?? true);
+            $sameSite     = (string) ($cfg['samesite'] ?? 'Lax');
+            $path         = (string) ($cfg['path'] ?? '/');
+
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path'     => $path,
+                'secure'   => $secure,
+                'httponly' => $httpOnly,
+                'samesite' => $sameSite,
+            ]);
+
             session_start();
             self::$started = true;
         }

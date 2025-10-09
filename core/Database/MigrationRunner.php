@@ -64,14 +64,25 @@ class MigrationRunner
 
     private function createMigrationsTable(): void
     {
-        $this->pdo->exec('
-            CREATE TABLE IF NOT EXISTS migrations (
+        $driver = $_ENV['DB_DRIVER'] ?? 'mysql';
+
+        if ($driver === 'sqlite') {
+            $sql = 'CREATE TABLE IF NOT EXISTS migrations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                batch INTEGER NOT NULL,
+                migrated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )';
+        } else {
+            $sql = 'CREATE TABLE IF NOT EXISTS migrations (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 batch INT NOT NULL,
                 migrated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ');
+            )';
+        }
+
+        $this->pdo->exec($sql);
     }
 
     private function getAppliedMigrations(): array

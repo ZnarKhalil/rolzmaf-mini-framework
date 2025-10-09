@@ -313,7 +313,7 @@ class QueryBuilder
         }
 
         $allowed = $this->model::allowedColumns();
-        if (is_array($allowed) && !in_array($column, $allowed, true)) {
+        if (is_array($allowed) && !in_array('*', $allowed, true) && !in_array($column, $allowed, true)) {
             throw new \InvalidArgumentException("Disallowed column '$column' in $context for model " . get_class($this->model));
         }
     }

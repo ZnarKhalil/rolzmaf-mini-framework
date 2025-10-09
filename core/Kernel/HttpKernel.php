@@ -42,7 +42,31 @@ class HttpKernel
                 return new Response()->setStatus(404)->write('Controller or method not found');
             }
 
-            return new $controller()->$method($req);
+            $instance = new $controller();
+
+            try {
+                $refMethod = \ReflectionMethod::createFromMethodName("{$controller}::{$method}");
+                $params    = $refMethod->getParameters();
+
+                if (count($params) === 0) {
+                    return $instance->$method();
+                }
+
+                $param = $params[0];
+                $type  = $param->getType();
+
+                if ($type instanceof \ReflectionNamedType
+                    && !$type->isBuiltin()
+                    && is_a($type->getName(), RequestInterface::class, true)
+                ) {
+                    return $instance->$method($req);
+                }
+
+                // Fallback: call without arguments
+                return $instance->$method();
+            } catch (\ReflectionException $e) {
+                return new Response()->setStatus(500)->write('Failed to invoke controller');
+            }
         });
     }
 }

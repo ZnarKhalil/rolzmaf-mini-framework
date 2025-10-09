@@ -6,11 +6,7 @@ namespace Core\Routing;
 
 class Route
 {
-    public array $middleware = [] {
-        get {
-            return $this->middleware;
-        }
-    }
+    public array $middleware = [];
 
     public function __construct(
         public readonly string $method,

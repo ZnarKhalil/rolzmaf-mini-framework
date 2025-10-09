@@ -10,4 +10,6 @@ interface ResponseInterface
     public function setHeader(string $key, string $value): static;
     public function write(string $content): static;
     public function send(): void;
+    public function json(array|object $data, int $status = 200): static;
+    public function redirect(string $to, int $status = 302): static;
 }

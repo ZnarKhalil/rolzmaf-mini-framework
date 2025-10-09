@@ -47,10 +47,43 @@ class MakeModelCommand implements CommandInterface
             mkdir($dir, 0775, true);
         }
 
-        $stub    = file_get_contents(__DIR__ . '/../../stubs/model.stub');
-        $content = str_replace(
+        $stub = file_get_contents(__DIR__ . '/../../Stubs/model.stub');
+
+        // Infer table name from class: snake_case and pluralize the last segment
+        $snake = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $className));
+
+        $pluralize = static function (string $word): string {
+            // category -> categories (consonant + y)
+            if (preg_match('/[^aeiou]y$/i', $word)) {
+                return substr($word, 0, -1) . 'ies';
+            }
+
+            // toy -> toys (vowel + y)
+            if (preg_match('/[aeiou]y$/i', $word)) {
+                return $word . 's';
+            }
+
+            // bus -> buses, box -> boxes, church -> churches
+            if (preg_match('/(s|sh|ch|x|z)$/i', $word)) {
+                return $word . 'es';
+            }
+
+            // wolf -> wolves, knife -> knives
+            if (preg_match('/(fe|f)$/i', $word)) {
+                return preg_replace('/(fe|f)$/i', 'ves', $word);
+            }
+
+            // default
+            return $word . 's';
+        };
+
+        $parts      = explode('_', $snake);
+        $last       = array_pop($parts);
+        $lastPlural = $pluralize($last);
+        $table      = ($parts ? implode('_', $parts) . '_' : '') . $lastPlural;
+        $content    = str_replace(
             ['{{class}}', '{{namespace}}', '{{table}}'],
-            [$className, $namespace],
+            [$className, $namespace, $table],
             $stub
         );
 

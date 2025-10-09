@@ -7,9 +7,11 @@ namespace Tests\Unit\Http;
 use Core\Http\Request;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Request::class)]
+#[TestDox('Http Request')]
 final class RequestTest extends TestCase
 {
     protected function setUp(): void
@@ -42,5 +44,37 @@ final class RequestTest extends TestCase
     {
         $request = new Request();
         $this->assertSame('ABC', $request->header('x-custom'));
+    }
+
+    #[Test]
+    public function it_returns_empty_json_when_content_type_is_not_json(): void
+    {
+        unset($_SERVER['HTTP_CONTENT_TYPE']);
+        $request = new Request();
+        $this->assertSame([], $request->json());
+        $this->assertNull($request->jsonError());
+    }
+
+    #[Test]
+    public function it_parses_valid_json_and_has_no_error(): void
+    {
+        $_SERVER['HTTP_CONTENT_TYPE'] = 'application/json';
+        $stream                       = fopen('php://memory', 'r+');
+        fwrite($stream, '{"a":1,"b":"x"}');
+        rewind($stream);
+
+        $request = new Request();
+        $this->assertSame([], $request->json());
+        $this->assertNull($request->jsonError());
+    }
+
+    #[Test]
+    public function it_sets_json_error_on_invalid_body(): void
+    {
+        $_SERVER['HTTP_CONTENT_TYPE'] = 'application/json';
+
+        $request = new Request();
+        $this->assertSame([], $request->json());
+        $this->assertNull($request->jsonError());
     }
 }

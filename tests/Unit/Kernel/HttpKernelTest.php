@@ -112,4 +112,30 @@ final class HttpKernelTest extends TestCase
 
         $this->assertSame(404, $status->getValue($response));
     }
+
+    #[Test]
+    public function it_invokes_controller_without_request_parameter(): void
+    {
+        $router = new Router();
+
+        eval('
+            namespace App\\Controllers;
+            use Core\\Http\\Response;
+            class PlainController { public function plain(): Response { return (new Response())->write("ok"); } }
+        ');
+
+        $router->get('/noparams', [\App\Controllers\PlainController::class, 'plain']);
+
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['REQUEST_URI']    = '/noparams';
+
+        $kernel   = new HttpKernel($router);
+        $response = $kernel->handle(new Request());
+
+        $ref  = new \ReflectionClass($response);
+        $prop = $ref->getProperty('content');
+        $prop->setAccessible(true);
+
+        $this->assertSame('ok', $prop->getValue($response));
+    }
 }

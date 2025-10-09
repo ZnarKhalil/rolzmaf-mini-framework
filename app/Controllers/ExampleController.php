@@ -4,29 +4,18 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\User;
+use Core\Http\Contracts\RequestInterface;
 use Core\Http\Response;
 
 class ExampleController
 {
-    public function index(): Response
+    public function index(RequestInterface $request): Response
     {
-        $user = User::query()
-            ->with('posts')
-            ->find(1);
-
-        echo $user->name.PHP_EOL;
-
-        foreach ($user->posts as $post) {
-            echo $post->title.PHP_EOL;
-        }
-
-        return new Response()->setStatus(200);
-
+        return new Response()->json(['message' => 'Hello from index']);
     }
 
     public function about(): Response
     {
-        return new Response()->setStatus(200)->write('About page');
+        return new Response()->write('About page');
     }
 }

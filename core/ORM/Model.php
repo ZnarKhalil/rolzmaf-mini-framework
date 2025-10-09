@@ -44,10 +44,32 @@ abstract class Model
 
     public static function table(): string
     {
-        // default to plural snake_case of class name
+        // default to plural snake_case of class name (pluralize last segment)
         $class = new \ReflectionClass(static::class)->getShortName();
+        $snake = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $class));
 
-        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $class)) . 's';
+        $pluralize = static function (string $word): string {
+            if (preg_match('/[^aeiou]y$/i', $word)) {
+                return substr($word, 0, -1) . 'ies';
+            }
+            if (preg_match('/[aeiou]y$/i', $word)) {
+                return $word . 's';
+            }
+            if (preg_match('/(s|sh|ch|x|z)$/i', $word)) {
+                return $word . 'es';
+            }
+            if (preg_match('/(fe|f)$/i', $word)) {
+                return preg_replace('/(fe|f)$/i', 'ves', $word);
+            }
+
+            return $word . 's';
+        };
+
+        $parts      = explode('_', $snake);
+        $last       = array_pop($parts);
+        $lastPlural = $pluralize($last);
+
+        return ($parts ? implode('_', $parts) . '_' : '') . $lastPlural;
     }
 
     public static function primaryKey(): string

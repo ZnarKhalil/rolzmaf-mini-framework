@@ -47,7 +47,7 @@ class MakeControllerCommand implements CommandInterface
             mkdir($dir, 0777, true);
         }
 
-        $stub    = file_get_contents(__DIR__ . '/../../stubs/controller.stub');
+        $stub    = file_get_contents(__DIR__ . '/../../Stubs/controller.stub');
         $content = str_replace(
             ['{{class}}', '{{namespace}}'],
             [$className, $namespace],

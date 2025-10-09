@@ -1,60 +1,49 @@
-# Rolzmaf mini Framework
+# Rolzmaf Mini Framework
+
 ![rolzmaf.png](public/rolzmaf.png)
 
 ![CI](https://github.com/ZnarKhalil/rolzmaf-mini-framework/actions/workflows/ci.yml/badge.svg?event=pull_request)
 ![PHP](https://img.shields.io/badge/php-8.4-blue)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Rolzmaf is a lightweight, modern PHP framework inspired by Laravel and built completely from the ground up as a **learning project**.  
-The main goal is to understand how frameworks work internally — from routing, to ORM, to migrations — by implementing the core features ourselves.
+Rolzmaf is a compact, modern PHP framework built from scratch for clarity and learning. It borrows proven ideas from the PHP ecosystem and demonstrates how a framework fits together end‑to‑end: routing, middleware, HTTP, ORM, and migrations — with straightforward, readable code.
 
-**⚠️ Note**: This framework is not intended for production use. It is primarily for educational and experimental purposes.
+Note: This project is educational by design. While many parts are production‑like, you should evaluate and harden before using in real systems.
 
-## ✨ Features
-“These features are implemented for learning purposes and may not cover all production edge cases.”
+## Features
 
-- **Routing**
-    - Simple, expressive `Router` with middleware support.
-    - Global & per-route middleware.
-    - CSRF and Session middleware included.
+- Routing with middleware
+  - Global and per‑route middleware
+  - Simple, explicit route definitions
+  - CSRF + Session middleware included
 
-- **Database & ORM**
-    - QueryBuilder with:
-        - `select`, `where`, `whereIn`, `orderBy`, `limit`, `first`, `find`, `exists`
-        - `join`, `leftJoin`
-        - `insert`, `update`, `delete`
-        - `toSql()` for debugging queries
-    - Secure column validation (whitelist + regex)
-    - Relations:
-        - `hasMany`
-        - `belongsTo`
-    - Eager loading with `with('relation')` to prevent N+1 queries.
-    - SQLite & MySQL supported.
+- HTTP primitives
+  - Request: method, URI, query, input, headers
+  - JSON helpers with content‑type gating and error reporting
+  - Response: status, headers, body, plus `json()` and `redirect()` helpers
 
-- **Migrations**
-    - CLI commands for `migrate`, `rollback`, and `make:migration`.
-    - Automatic foreign key constraints.
-    - Schema builder with fluent API.
+- Database + ORM
+  - Query builder: `select`, `where`, `whereIn`, `orderBy`, `limit`, `first`, `find`, `exists`
+  - Joins: `join`, `leftJoin`
+  - Mutations: `insert`, `update`, `delete`
+  - Relations: `hasMany`, `belongsTo` with eager loading via `with()`
+  - Driver support: SQLite and MySQL
 
-- **CLI Tools**
-    - `make:controller`
-    - `make:model`
-    - `make:middleware`
-    - Uses **stubs** with dynamic namespaces and nested folder support.
+- Migrations + Schema
+  - CLI: `migrate`, `migrate:rollback`, `make:migration`
+  - Fluent schema builder, foreign keys (MySQL), indexes
+  - Driver‑aware migrations table
 
-- **Testing**
-    - Full PHPUnit test suite.
-    - In-memory SQLite for ORM/QueryBuilder tests.
-    - Unit tests for migrations, CLI commands, schema, and relations.
+- Console tools
+  - Generators: `make:controller`, `make:model`, `make:middleware`
+  - Stubs with nested namespaces
 
-- **Security**
-    - Strict PDO prepared statements everywhere (safe from SQL injection).
-    - Whitelisted/validated columns and operators.
-    - CSRF protection middleware.
-    - Session management out-of-the-box.
+- Security & robustness
+  - Prepared statements everywhere
+  - Column allow‑listing with safe identifier checks
+  - CSRF protection, session management with safe cookie defaults
 
-## 🚀 Installation
-“⚠️ This framework is meant for experimentation. Use at your own risk in production.”
+## Quick Start
 
 ```bash
 git clone https://github.com/ZnarKhalil/rolzmaf-mini-framework.git
@@ -62,61 +51,110 @@ cd rolzmaf-mini-framework
 composer install
 cp .env.example .env
 
-mkdir -p storage/logs
+mkdir -p storage/logs storage/files
 touch storage/logs/app.log
-chmod 755 storage/logs
 ```
-Update your .env with database credentials.
 
-## 🛠️ Usage
+Configure your database in `.env`:
 
-- **Routing**
+```
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+
+DB_DRIVER=sqlite
+DB_PATH=storage/database.sqlite
+```
+
+Serve the app (any PHP 8.4+ server):
+
+```bash
+php -S localhost:8000 -t public
+```
+
+Visit http://localhost:8000.
+
+## Routing
+
+`routes/web.php`
 
 ```php
-// routes/web.php
+use Core\Routing\Router;
+use App\Controllers\ExampleController;
+use Core\Middleware\System\CsrfMiddleware;
+use Core\Middleware\System\SessionMiddleware;
+
 return function (Router $router) {
     $router->addGlobalMiddleware(SessionMiddleware::class);
     $router->addGlobalMiddleware(CsrfMiddleware::class);
 
     $router->get('/', [ExampleController::class, 'index']);
-
     $router->get('/about', [ExampleController::class, 'about']);
 };
 ```
 
-- **Controllers**
+## Controllers
+
 ```php
 namespace App\Controllers;
 
-use App\Models\Post;
+use Core\Http\Contracts\RequestInterface;
+use Core\Http\Response;
 
 class ExampleController
 {
-    public function index()
+    // Supports optional Request dependency
+    public function index(RequestInterface $request): Response
     {
-        $posts = Post::query()
-            ->with('user')
-            ->limit(5)
-            ->fetch();
+        return new Response()->json(['message' => 'Hello from index']);
+    }
 
-        foreach ($posts as $post) {
-            echo $post->title;
-            echo $post->user->name;
-        }
+    // Methods without parameters are also supported
+    public function about(): Response
+    {
+        return new Response()->write('About page');
     }
 }
 ```
 
-- **ORM**
+## Request & Response
+
+- Read inputs
 
 ```php
-// Find user
+$method = $request->method();        // GET, POST, ...
+$uri    = $request->uri();            // /path
+$q      = $request->query('page');    // ?page=...
+$in     = $request->input('name');    // POST body (form)
+$hdr    = $request->header('x-id');   // Headers (normalized)
+```
+
+- JSON helpers
+
+```php
+// Respond JSON
+return (new Response())->json(['ok' => true]);
+
+// Redirect
+return (new Response())->redirect('/login');
+
+// Parse JSON only when content-type is application/json
+$data = $request->json();            // [] when not JSON or empty body
+$err  = $request->jsonError();       // error message or null
+```
+
+## ORM Examples
+
+```php
+use App\Models\User;
+
+// Find
 $user = User::query()->find(1);
 
 // Insert
 User::query()->insert([
     'name' => 'Znar',
-    'email' => 'znar@example.com'
+    'email' => 'znar@example.com',
 ]);
 
 // Update
@@ -126,24 +164,55 @@ User::query()->where('id', '=', 1)->update(['name' => 'Updated']);
 User::query()->where('id', '=', 1)->delete();
 
 // Debug SQL
-[$sql, $params] = User::query()->where('id', '=', 1)->toSql();
+$dbg = User::query()->where('id', '=', 1)->toSql();
+```
 
-Relations
+Relations with eager loading:
 
-class Post extends Model {
-    public function user() {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-}
+```php
+use App\Models\Post;
 
-class User extends Model {
-    public function posts() {
-        return $this->hasMany(Post::class, 'user_id');
-    }
+$posts = Post::query()->with('user')->limit(5)->fetch();
+foreach ($posts as $post) {
+    echo $post->title . ' by ' . $post->user->name;
 }
 ```
 
-## 📦 CLI Generators
+## Migrations & Schema
+
+Generate and run migrations:
+
+```bash
+php rolzmaf make:migration create_users_table
+php rolzmaf migrate
+php rolzmaf migrate:rollback
+```
+
+Migration example:
+
+```php
+use Core\Schema\Schema;
+
+return new class {
+    public function up(): void
+    {
+        Schema::instance()->create('users', function ($table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::instance()->dropIfExists('users');
+    }
+};
+```
+
+## Console Generators
 
 ```bash
 php rolzmaf make:controller Blog/PostController
@@ -151,39 +220,45 @@ php rolzmaf make:model Blog/Post
 php rolzmaf make:middleware Admin/VerifyAdmin
 ```
 
-Supports nested folders and auto-namespace generation.
+The generators support nested folders and generate proper namespaces. Models infer table names (snake_case plural) and can restrict columns via `$allowedColumns`.
 
-## 🧪 Testing
+## Configuration & Security
+
+- Config is loaded from `config/app.php` (via `bootstrap.php`).
+- Safe cookie defaults are derived from environment and URL:
+  - In `production` or when `APP_URL` is https, cookies are `secure` by default
+  - `httponly` true and `samesite` Lax by default
+- Override via the `cookie` section in `config/app.php`:
+
+```php
+'cookie' => [
+    'secure'   => true,
+    'httponly' => true,
+    'samesite' => 'Lax', // Lax | Strict | None
+    'path'     => '/',
+]
+```
+
+## Testing
+
+Run all tests:
 
 ```bash
-vendor/bin/phpunit
+composer test
 ```
-Runs against SQLite in-memory database.
 
+The test suite covers routing, middleware pipeline behavior, HTTP request/response, sessions, schema, migrations, storage and ORM relations. SQLite is used for DB‑related tests.
 
-## 📌 Roadmap
+## Roadmap
 
-Planned features we haven’t implemented yet:
-- save() method on models (upsert style).
-- Command Bus for jobs & queues.
-- API Resources (transformers for JSON responses).
-- Validation layer (FormRequests).
-- Config caching & route caching.
-- More drivers (PostgreSQL).
-- Authentication scaffolding (sessions + tokens).
-- Built-in HTTP client.
+- `save()` upsert on models
+- Route parameters and groups
+- Pagination support
+- Validation layer
+- Config and route caching
+- Additional DB drivers
+- Authentication scaffolding
 
-## 💡 Why Rolzmaf?
+## License
 
-Rolzmaf exists to:
-- Help developers learn the internals of frameworks like Laravel / Symfony by re-implementing the concepts.
-- Focus on clarity and learning (showing how things work without hidden magic).
-- Act as a portfolio project to showcase:
-- PHP 8.2+ modern features
-- Architecture & design patterns
-- ORM & query builder design
-- Middleware & routing
-
-## 📄 License
-
-This framework is open-sourced software licensed under the [MIT license](https://opensource.org/license/MIT).
+MIT

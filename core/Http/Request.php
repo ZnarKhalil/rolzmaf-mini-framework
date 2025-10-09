@@ -8,6 +8,7 @@ use Core\Http\Contracts\RequestInterface;
 
 class Request implements RequestInterface
 {
+    private ?string $jsonError = null;
     public function method(): string
     {
         return strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
@@ -50,13 +51,35 @@ class Request implements RequestInterface
 
     public function json(): array
     {
-        $raw = file_get_contents('php://input');
+        $this->jsonError = null;
 
-        return json_decode($raw, true) ?? [];
+        $contentType = (string) ($this->header('content-type') ?? '');
+        if ($contentType === '' || stripos($contentType, 'application/json') === false) {
+            return [];
+        }
+
+        $raw = file_get_contents('php://input') ?: '';
+        if ($raw === '') {
+            return [];
+        }
+
+        $data = json_decode($raw, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->jsonError = json_last_error_msg();
+
+            return [];
+        }
+
+        return $data ?? [];
     }
 
     public function all(): array
     {
         return array_merge($this->query(), $this->input(), $this->json());
+    }
+
+    public function jsonError(): ?string
+    {
+        return $this->jsonError;
     }
 }

@@ -13,4 +13,5 @@ interface RequestInterface
     public function header(?string $key = null, mixed $default = null): mixed;
     public function json(): array;
     public function all(): array;
+    public function jsonError(): ?string;
 }

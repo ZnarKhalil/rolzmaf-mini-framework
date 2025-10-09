@@ -47,7 +47,7 @@ class MakeMiddlewareCommand implements CommandInterface
             mkdir($dir, 0775, true);
         }
 
-        $stub    = file_get_contents(__DIR__ . '/../../stubs/middleware.stub');
+        $stub    = file_get_contents(__DIR__ . '/../../Stubs/middleware.stub');
         $content = str_replace(
             ['{{class}}', '{{namespace}}'],
             [$className, $namespace],

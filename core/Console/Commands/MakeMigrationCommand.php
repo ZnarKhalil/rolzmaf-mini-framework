@@ -32,7 +32,7 @@ class MakeMigrationCommand implements CommandInterface
         $filename   = "{$timestamp}_{$name}.php";
         $targetPath = __DIR__ . '/../../../database/migrations/' . $filename;
 
-        $stub = file_get_contents(__DIR__ . '/../../stubs/migration.stub');
+        $stub = file_get_contents(__DIR__ . '/../../Stubs/migration.stub');
 
         file_put_contents($targetPath, $stub);
 
