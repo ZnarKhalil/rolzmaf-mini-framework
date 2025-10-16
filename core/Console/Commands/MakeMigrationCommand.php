@@ -9,6 +9,14 @@ use Core\Console\Input;
 
 class MakeMigrationCommand implements CommandInterface
 {
+    private string $migrationsPath;
+
+    public function __construct(?string $migrationsPath = null)
+    {
+        $defaultPath         = dirname(__DIR__, 3) . '/database/migrations';
+        $this->migrationsPath = rtrim($migrationsPath ?? $defaultPath, '/');
+    }
+
     public function name(): string
     {
         return 'make:migration';
@@ -30,13 +38,17 @@ class MakeMigrationCommand implements CommandInterface
 
         $timestamp  = date('Y_m_d_His');
         $filename   = "{$timestamp}_{$name}.php";
-        $targetPath = __DIR__ . '/../../../database/migrations/' . $filename;
+        $targetPath = $this->migrationsPath . '/' . $filename;
+
+        if (!is_dir($this->migrationsPath)) {
+            mkdir($this->migrationsPath, 0777, true);
+        }
 
         $stub = file_get_contents(__DIR__ . '/../../Stubs/migration.stub');
 
         file_put_contents($targetPath, $stub);
 
-        echo "✅  Migration created: database/migrations/{$filename}\n";
+        echo "✅  Migration created: {$filename}\n";
 
         return 0;
     }

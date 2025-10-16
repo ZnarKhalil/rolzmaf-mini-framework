@@ -13,8 +13,33 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(MigrateRollbackCommand::class)]
 final class MigrateRollbackCommandTest extends TestCase
 {
+    private array $envBackup = [];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->envBackup['DB_DRIVER'] = $_ENV['DB_DRIVER'] ?? null;
+        $this->envBackup['DB_PATH']   = $_ENV['DB_PATH'] ?? null;
+
+        $_ENV['DB_DRIVER'] = 'sqlite';
+        $_ENV['DB_PATH']   = ':memory:';
+    }
+
+    protected function tearDown(): void
+    {
+        foreach ($this->envBackup as $key => $value) {
+            if ($value === null) {
+                unset($_ENV[$key]);
+            } else {
+                $_ENV[$key] = $value;
+            }
+        }
+
+        parent::tearDown();
+    }
+
     #[Test]
-    public function test_it_handles_no_migrations_gracefully(): void
+    public function it_handles_no_migrations_gracefully(): void
     {
         $command = new MigrateRollbackCommand();
         $input   = new Input([]);

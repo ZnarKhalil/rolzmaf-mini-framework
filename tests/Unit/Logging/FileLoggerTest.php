@@ -13,15 +13,17 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(FileLogger::class)]
 final class FileLoggerTest extends TestCase
 {
+    private string $logDir;
     private string $logFile;
 
     protected function setUp(): void
     {
-        $this->logFile = __DIR__ . '/../../../storage/logs/test.log';
+        parent::setUp();
 
-        if (file_exists($this->logFile)) {
-            unlink($this->logFile);
-        }
+        $this->logDir  = sys_get_temp_dir() . '/rolzmaf_logs_' . bin2hex(random_bytes(4));
+        $this->logFile = $this->logDir . '/test.log';
+
+        mkdir($this->logDir, 0777, true);
 
         Logger::setDriver(new FileLogger($this->logFile));
     }
@@ -71,8 +73,26 @@ final class FileLoggerTest extends TestCase
 
     protected function tearDown(): void
     {
-        if (file_exists($this->logFile)) {
-            unlink($this->logFile);
+        Logger::setDriver(new FileLogger('php://temp'));
+        $this->deleteDirectory($this->logDir);
+        parent::tearDown();
+    }
+
+    private function deleteDirectory(string $dir): void
+    {
+        if (!is_dir($dir)) {
+            return;
         }
+
+        foreach (scandir($dir) ?: [] as $file) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+
+            $path = $dir . '/' . $file;
+            is_dir($path) ? $this->deleteDirectory($path) : unlink($path);
+        }
+
+        rmdir($dir);
     }
 }

@@ -2,45 +2,67 @@
 
 declare(strict_types=1);
 
+namespace Tests\Unit\ORM\Fixtures;
+
+use Core\ORM\Model;
+
+final class Category extends Model
+{
+}
+
+final class Toy extends Model
+{
+}
+
+final class Bus extends Model
+{
+}
+
+final class Box extends Model
+{
+}
+
+final class Church extends Model
+{
+}
+
+final class Wolf extends Model
+{
+}
+
+final class Knife extends Model
+{
+}
+
+final class UserCategory extends Model
+{
+}
+
+final class UserStatusCategory extends Model
+{
+}
+
 namespace Tests\Unit\ORM;
 
 use Core\ORM\Model;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-
-// Test fixtures with various pluralization endings
-class Category extends Model
-{
-}
-class Toy extends Model
-{
-}
-class Bus extends Model
-{
-}
-class Box extends Model
-{
-}
-class Church extends Model
-{
-}
-class Wolf extends Model
-{
-}
-class Knife extends Model
-{
-}
-class UserCategory extends Model
-{
-}
-class UserStatusCategory extends Model
-{
-}
+use Tests\Unit\ORM\Fixtures\Box;
+use Tests\Unit\ORM\Fixtures\Bus;
+use Tests\Unit\ORM\Fixtures\Category;
+use Tests\Unit\ORM\Fixtures\Church;
+use Tests\Unit\ORM\Fixtures\Knife;
+use Tests\Unit\ORM\Fixtures\Toy;
+use Tests\Unit\ORM\Fixtures\UserCategory;
+use Tests\Unit\ORM\Fixtures\UserStatusCategory;
+use Tests\Unit\ORM\Fixtures\Wolf;
 
 #[CoversClass(Model::class)]
 final class ModelTest extends TestCase
 {
-    public function test_table_pluralization_basic_cases(): void
+    #[Test]
+    public function it_pluralizes_basic_cases(): void
     {
         $this->assertSame('categories', Category::table());
         $this->assertSame('toys', Toy::table());
@@ -51,34 +73,34 @@ final class ModelTest extends TestCase
         $this->assertSame('knives', Knife::table());
     }
 
-    public function test_table_pluralizes_only_last_snake_segment(): void
+    #[Test]
+    public function it_pluralizes_only_last_snake_segment(): void
     {
         $this->assertSame('user_categories', UserCategory::table());
         $this->assertSame('user_status_categories', UserStatusCategory::table());
     }
 
-    public function test_attribute_access_and_to_array(): void
+    #[Test]
+    public function it_handles_attribute_access_and_array_conversion(): void
     {
-        $m        = new Category();
-        $m->name  = 'Books';
-        $m->count = 3;
+        $model        = new Category();
+        $model->name  = 'Books';
+        $model->count = 3;
 
-        $this->assertSame('Books', $m->name);
-        $this->assertSame(3, $m->count);
+        $this->assertSame('Books', $model->name);
+        $this->assertSame(3, $model->count);
 
-        $arr = $m->toArray();
-        $this->assertArrayHasKey('name', $arr);
-        $this->assertArrayHasKey('count', $arr);
-        $this->assertSame('Books', $arr['name']);
-        $this->assertSame(3, $arr['count']);
+        $array = $model->toArray();
+        $this->assertSame('Books', $array['name'] ?? null);
+        $this->assertSame(3, $array['count'] ?? null);
     }
 
-    public function test_default_primary_key_and_allowed_columns(): void
+    #[Test]
+    public function it_has_default_primary_key_and_allowed_columns(): void
     {
         $this->assertSame('id', Category::primaryKey());
 
         $allowed = Category::allowedColumns();
-        $this->assertIsArray($allowed);
         $this->assertContains('*', $allowed);
         $this->assertContains('id', $allowed);
         $this->assertContains('created_at', $allowed);

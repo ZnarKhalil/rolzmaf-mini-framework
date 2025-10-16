@@ -16,11 +16,9 @@ final class DiskStorageTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->root = __DIR__ . '/temp_storage';
-
-        if (!is_dir($this->root)) {
-            mkdir($this->root, 0777, true);
-        }
+        parent::setUp();
+        $this->root = sys_get_temp_dir() . '/rolzmaf_storage_' . bin2hex(random_bytes(4));
+        mkdir($this->root, 0777, true);
     }
 
     #[Test]
@@ -65,6 +63,7 @@ final class DiskStorageTest extends TestCase
     protected function tearDown(): void
     {
         $this->deleteDirectory($this->root);
+        parent::tearDown();
     }
 
     private function deleteDirectory(string $dir): void
@@ -73,7 +72,7 @@ final class DiskStorageTest extends TestCase
             return;
         }
 
-        foreach (scandir($dir) as $file) {
+        foreach (scandir($dir) ?: [] as $file) {
             if ($file === '.' || $file === '..') {
                 continue;
             }

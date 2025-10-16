@@ -12,6 +12,20 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Cookie::class)]
 final class CookieTest extends TestCase
 {
+    private array $cookieBackup = [];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->cookieBackup = $_COOKIE ?? [];
+    }
+
+    protected function tearDown(): void
+    {
+        $_COOKIE = $this->cookieBackup;
+        parent::tearDown();
+    }
+
     #[Test]
     public function it_sets_and_reads_cookie(): void
     {
