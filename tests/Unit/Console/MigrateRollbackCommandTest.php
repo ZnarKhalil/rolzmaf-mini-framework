@@ -19,7 +19,7 @@ final class MigrateRollbackCommandTest extends TestCase
     {
         parent::setUp();
         $this->envBackup['DB_DRIVER'] = $_ENV['DB_DRIVER'] ?? null;
-        $this->envBackup['DB_PATH']   = $_ENV['DB_PATH'] ?? null;
+        $this->envBackup['DB_PATH']   = $_ENV['DB_PATH']   ?? null;
 
         $_ENV['DB_DRIVER'] = 'sqlite';
         $_ENV['DB_PATH']   = ':memory:';

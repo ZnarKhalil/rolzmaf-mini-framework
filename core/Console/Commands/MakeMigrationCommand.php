@@ -13,7 +13,7 @@ class MakeMigrationCommand implements CommandInterface
 
     public function __construct(?string $migrationsPath = null)
     {
-        $defaultPath         = dirname(__DIR__, 3) . '/database/migrations';
+        $defaultPath          = dirname(__DIR__, 3) . '/database/migrations';
         $this->migrationsPath = rtrim($migrationsPath ?? $defaultPath, '/');
     }
 
