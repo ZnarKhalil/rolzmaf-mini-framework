@@ -16,6 +16,11 @@ class TestModel extends Model
         self::$testPdo = $pdo;
     }
 
+    public static function clearTestPdo(): void
+    {
+        self::$testPdo = null;
+    }
+
     public static function query(): \Core\ORM\QueryBuilder
     {
         if (self::$testPdo === null) {

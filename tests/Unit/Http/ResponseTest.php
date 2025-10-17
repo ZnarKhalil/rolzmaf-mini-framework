@@ -23,19 +23,9 @@ final class ResponseTest extends TestCase
                  ->setHeader('Content-Type', 'text/plain')
                  ->write('Not Found');
 
-        $reflection = new \ReflectionClass($response);
-
-        $status = $reflection->getProperty('status');
-        $status->setAccessible(true);
-        $this->assertSame(404, $status->getValue($response));
-
-        $headers = $reflection->getProperty('headers');
-        $headers->setAccessible(true);
-        $this->assertSame(['Content-Type' => 'text/plain'], $headers->getValue($response));
-
-        $content = $reflection->getProperty('content');
-        $content->setAccessible(true);
-        $this->assertSame('Not Found', $content->getValue($response));
+        $this->assertSame(404, $this->responseProperty($response, 'status'));
+        $this->assertSame(['Content-Type' => 'text/plain'], $this->responseProperty($response, 'headers'));
+        $this->assertSame('Not Found', $this->responseProperty($response, 'content'));
     }
 
     #[Test]
@@ -43,17 +33,11 @@ final class ResponseTest extends TestCase
     {
         $response = (new Response())->json(['ok' => true, 'n' => 1], 201);
 
-        $ref    = new \ReflectionClass($response);
-        $status = $ref->getProperty('status');
-        $status->setAccessible(true);
-        $headers = $ref->getProperty('headers');
-        $headers->setAccessible(true);
-        $content = $ref->getProperty('content');
-        $content->setAccessible(true);
+        $headers = $this->responseProperty($response, 'headers');
 
-        $this->assertSame(201, $status->getValue($response));
-        $this->assertSame('application/json; charset=utf-8', $headers->getValue($response)['Content-Type'] ?? null);
-        $this->assertSame('{"ok":true,"n":1}', $content->getValue($response));
+        $this->assertSame(201, $this->responseProperty($response, 'status'));
+        $this->assertSame('application/json; charset=utf-8', $headers['Content-Type'] ?? null);
+        $this->assertSame('{"ok":true,"n":1}', $this->responseProperty($response, 'content'));
     }
 
     #[Test]
@@ -61,13 +45,30 @@ final class ResponseTest extends TestCase
     {
         $response = (new Response())->redirect('/login', 302);
 
-        $ref    = new \ReflectionClass($response);
-        $status = $ref->getProperty('status');
-        $status->setAccessible(true);
-        $headers = $ref->getProperty('headers');
-        $headers->setAccessible(true);
+        $headers = $this->responseProperty($response, 'headers');
 
-        $this->assertSame(302, $status->getValue($response));
-        $this->assertSame('/login', $headers->getValue($response)['Location'] ?? null);
+        $this->assertSame(302, $this->responseProperty($response, 'status'));
+        $this->assertSame('/login', $headers['Location'] ?? null);
+    }
+
+    /**
+     */
+    private function responseProperty(Response $response, string $property)
+    {
+        static $cache = [];
+        $class        = $response::class;
+
+        if (!isset($cache[$class][$property])) {
+            $ref = new \ReflectionClass($response);
+            if (!$ref->hasProperty($property)) {
+                throw new \InvalidArgumentException("Property {$property} does not exist on {$class}");
+            }
+
+            $prop = $ref->getProperty($property);
+            $prop->setAccessible(true);
+            $cache[$class][$property] = $prop;
+        }
+
+        return $cache[$class][$property]->getValue($response);
     }
 }

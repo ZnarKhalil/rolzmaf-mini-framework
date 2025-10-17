@@ -7,6 +7,7 @@ namespace Tests\Unit\Middleware;
 use Core\Http\Request;
 use Core\Http\Response;
 use Core\Middleware\System\CsrfMiddleware;
+use Core\Session\Session;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -14,6 +15,25 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(CsrfMiddleware::class)]
 final class CsrfMiddlewareTest extends TestCase
 {
+    private array $serverBackup = [];
+    private array $postBackup   = [];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->serverBackup = $_SERVER ?? [];
+        $this->postBackup   = $_POST   ?? [];
+        Session::destroy();
+    }
+
+    protected function tearDown(): void
+    {
+        $_SERVER = $this->serverBackup;
+        $_POST   = $this->postBackup;
+        Session::destroy();
+        parent::tearDown();
+    }
+
     #[Test]
     public function allows_get_requests_without_token(): void
     {

@@ -13,10 +13,25 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(MakeMigrationCommand::class)]
 final class MakeMigrationCommandTest extends TestCase
 {
-    #[Test]
-    public function test_it_creates_migration_file(): void
+    private string $tempDir;
+
+    protected function setUp(): void
     {
-        $command = new MakeMigrationCommand();
+        parent::setUp();
+        $this->tempDir = sys_get_temp_dir() . '/rolzmaf_migrations_' . bin2hex(random_bytes(4));
+        mkdir($this->tempDir, 0777, true);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->deleteDirectory($this->tempDir);
+        parent::tearDown();
+    }
+
+    #[Test]
+    public function it_creates_migration_file(): void
+    {
+        $command = new MakeMigrationCommand($this->tempDir);
         $name    = 'test_users_table';
         $input   = new Input([$name]);
 
@@ -24,13 +39,26 @@ final class MakeMigrationCommandTest extends TestCase
         $exitCode = $command->execute($input);
         ob_end_clean();
 
-        $files = glob(__DIR__ . '/../../../database/migrations/*_' . $name . '.php');
+        $files = glob($this->tempDir . '/*_' . $name . '.php');
         $this->assertNotEmpty($files);
         $this->assertSame(0, $exitCode);
+    }
 
-        // Cleanup
-        foreach ($files as $file) {
-            unlink($file);
+    private function deleteDirectory(string $dir): void
+    {
+        if (!is_dir($dir)) {
+            return;
         }
+
+        foreach (scandir($dir) ?: [] as $file) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+
+            $path = $dir . '/' . $file;
+            is_dir($path) ? $this->deleteDirectory($path) : unlink($path);
+        }
+
+        rmdir($dir);
     }
 }
