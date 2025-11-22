@@ -51,15 +51,12 @@ class HttpKernel
             try {
                 $instance = $container->make($controller);
 
-                // We still need to handle method injection for the action method itself
-                // The container resolves the constructor dependencies, but not the method call
-                // So we'll use the container to resolve method dependencies as well
-
-                $refMethod = new \ReflectionMethod($controller, $method);
+                $refMethod = \ReflectionMethod::createFromMethodName("{$controller}::{$method}");
                 $params = $refMethod->getParameters();
                 $args = [];
 
                 foreach ($params as $param) {
+
                     $type = $param->getType();
                     if ($type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
                         $args[] = $container->make($type->getName());
