@@ -6,6 +6,7 @@ namespace Tests\Unit\Schema;
 
 use Core\Schema\Schema;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Schema::class)]
@@ -17,7 +18,7 @@ final class SchemaTest extends TestCase
     }
 
     #[Test]
-    public function test_schema_instance_returns_singleton(): void
+    public function it_returns_singleton_instance(): void
     {
         $instance1 = Schema::instance();
         $instance2 = Schema::instance();

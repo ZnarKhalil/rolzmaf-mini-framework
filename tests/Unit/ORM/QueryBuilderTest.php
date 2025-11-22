@@ -2,19 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\ORM;
+namespace Tests\Unit\ORM\QueryBuilder\Fixtures;
 
-use Core\ORM\QueryBuilder;
-use PDO;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
+use Tests\Unit\ORM\TestModel;
 
-class DummyModel extends TestModel
+final class DummyModel extends TestModel
 {
     public static function table(): string
     {
         return 'dummies';
     }
+
     public static function primaryKey(): string
     {
         return 'id';
@@ -26,72 +24,100 @@ class DummyModel extends TestModel
     }
 }
 
+namespace Tests\Unit\ORM;
+
+use Core\ORM\QueryBuilder;
+use PDO;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use Tests\Unit\ORM\QueryBuilder\Fixtures\DummyModel;
+
 #[CoversClass(QueryBuilder::class)]
 final class QueryBuilderTest extends TestCase
 {
-    private PDO $pdo;
+    private ?PDO $pdo = null;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->pdo = new PDO('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->pdo->exec('CREATE TABLE dummies (id INTEGER PRIMARY KEY, name TEXT, value INTEGER)');
+
         DummyModel::setTestPdo($this->pdo);
     }
 
-    #[Test]
-    public function test_insert_and_fetch(): void
+    protected function tearDown(): void
     {
-        $qb = new QueryBuilder(new DummyModel(), $this->pdo);
-        $qb->insert(['name' => 'foo', 'value' => 42]);
-        $results = $qb->fetch();
-        $this->assertCount(1, $results);
-        $this->assertEquals('foo', $results[0]->name);
-        $this->assertEquals(42, $results[0]->value);
+        DummyModel::clearTestPdo();
+        $this->pdo = null;
+
+        parent::tearDown();
     }
 
     #[Test]
-    public function test_where_and_order_by(): void
+    public function it_inserts_and_fetches_records(): void
+    {
+        $qb = new QueryBuilder(new DummyModel(), $this->pdo);
+        $qb->insert(['name' => 'foo', 'value' => 42]);
+
+        $results = $qb->fetch();
+
+        $this->assertCount(1, $results);
+        $this->assertSame('foo', $results[0]->name);
+        $this->assertSame(42, $results[0]->value);
+    }
+
+    #[Test]
+    public function it_filters_and_sorts(): void
     {
         $qb = new QueryBuilder(new DummyModel(), $this->pdo);
         $qb->insert(['name' => 'a', 'value' => 1]);
         $qb->insert(['name' => 'b', 'value' => 2]);
+
         $results = (new QueryBuilder(new DummyModel(), $this->pdo))
             ->where('value', '>', 1)
             ->orderBy('name', 'desc')
             ->fetch();
+
         $this->assertCount(1, $results);
-        $this->assertEquals('b', $results[0]->name);
+        $this->assertSame('b', $results[0]->name);
     }
 
     #[Test]
-    public function test_where_id(): void
+    public function it_supports_where_in(): void
     {
         $qb = new QueryBuilder(new DummyModel(), $this->pdo);
         $qb->insert(['name' => 'x', 'value' => 10]);
         $qb->insert(['name' => 'y', 'value' => 20]);
+
         $results = (new QueryBuilder(new DummyModel(), $this->pdo))
             ->whereIn('value', [10])
             ->fetch();
+
         $this->assertCount(1, $results);
-        $this->assertEquals('x', $results[0]->name);
+        $this->assertSame('x', $results[0]->name);
     }
 
     #[Test]
-    public function test_limit(): void
+    public function it_limits_results(): void
     {
         $qb = new QueryBuilder(new DummyModel(), $this->pdo);
         for ($i = 0; $i < 5; $i++) {
-            $qb->insert(['name' => 'n'.$i, 'value' => $i]);
+            $qb->insert(['name' => "n{$i}", 'value' => $i]);
         }
+
         $results = (new QueryBuilder(new DummyModel(), $this->pdo))
             ->limit(2)
             ->fetch();
+
         $this->assertCount(2, $results);
     }
 
     #[Test]
-    public function test_update(): void
+    public function it_updates_records(): void
     {
         $qb = new QueryBuilder(new DummyModel(), $this->pdo);
         $qb->insert(['name' => 'before', 'value' => 1]);
@@ -107,11 +133,11 @@ final class QueryBuilderTest extends TestCase
             ->fetch();
 
         $this->assertCount(1, $results);
-        $this->assertEquals('after', $results[0]->name);
+        $this->assertSame('after', $results[0]->name);
     }
 
     #[Test]
-    public function test_delete(): void
+    public function it_deletes_records(): void
     {
         $qb = new QueryBuilder(new DummyModel(), $this->pdo);
         $qb->insert(['name' => 'delete_me', 'value' => 99]);
@@ -122,13 +148,12 @@ final class QueryBuilderTest extends TestCase
 
         $this->assertTrue($deleted);
 
-        $results = (new QueryBuilder(new DummyModel(), $this->pdo))
-            ->fetch();
+        $results = (new QueryBuilder(new DummyModel(), $this->pdo))->fetch();
         $this->assertCount(0, $results);
     }
 
     #[Test]
-    public function test_first_returns_single_model(): void
+    public function it_returns_first_record(): void
     {
         $qb = new QueryBuilder(new DummyModel(), $this->pdo);
         $qb->insert(['name' => 'first', 'value' => 1]);
@@ -139,11 +164,11 @@ final class QueryBuilderTest extends TestCase
             ->first();
 
         $this->assertInstanceOf(DummyModel::class, $model);
-        $this->assertEquals('first', $model->name);
+        $this->assertSame('first', $model->name);
     }
 
     #[Test]
-    public function test_exists_returns_true_when_match_found(): void
+    public function it_checks_for_existence(): void
     {
         $qb = new QueryBuilder(new DummyModel(), $this->pdo);
         $qb->insert(['name' => 'check', 'value' => 10]);
@@ -156,7 +181,7 @@ final class QueryBuilderTest extends TestCase
     }
 
     #[Test]
-    public function test_exists_returns_false_when_no_match(): void
+    public function it_detects_missing_records(): void
     {
         $exists = (new QueryBuilder(new DummyModel(), $this->pdo))
             ->where('name', '=', 'nope')
@@ -166,7 +191,7 @@ final class QueryBuilderTest extends TestCase
     }
 
     #[Test]
-    public function test_to_sql_outputs_correct_query(): void
+    public function it_outputs_sql_with_parameters(): void
     {
         $qb = (new QueryBuilder(new DummyModel(), $this->pdo))
             ->select('id', 'name')
@@ -178,38 +203,45 @@ final class QueryBuilderTest extends TestCase
 
         $this->assertStringContainsString('SELECT id, name FROM', $sqlInfo['sql']);
         $this->assertStringContainsString('WHERE `value` > ?', $sqlInfo['sql']);
-        $this->assertEquals([1], $sqlInfo['params']);
+        $this->assertSame([1], $sqlInfo['params']);
     }
 
     #[Test]
-    public function test_invalid_column_throws_exception(): void
+    public function it_rejects_invalid_columns(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessageMatches('/Disallowed column/');
 
-        (new QueryBuilder(new DummyModel(), $this->pdo))
-            ->select('DROP_TABLE');
+        (new QueryBuilder(new DummyModel(), $this->pdo))->select('DROP_TABLE');
     }
 
     #[Test]
-    public function test_join_generates_valid_sql(): void
+    public function it_builds_join_queries(): void
     {
         $qb = (new QueryBuilder(new DummyModel(), $this->pdo))
             ->select('id')
             ->join('other_table', 'dummies.id', '=', 'other_table.dummy_id');
 
         $sql = $qb->toSql()['sql'];
-        $this->assertStringContainsString('JOIN other_table ON dummies.id = other_table.dummy_id', $sql);
+
+        $this->assertStringContainsString(
+            'JOIN other_table ON dummies.id = other_table.dummy_id',
+            $sql
+        );
     }
 
     #[Test]
-    public function test_left_join_generates_valid_sql(): void
+    public function it_builds_left_join_queries(): void
     {
         $qb = (new QueryBuilder(new DummyModel(), $this->pdo))
             ->select('id')
             ->leftJoin('other_table', 'dummies.id', '=', 'other_table.dummy_id');
 
         $sql = $qb->toSql()['sql'];
-        $this->assertStringContainsString('LEFT JOIN other_table ON dummies.id = other_table.dummy_id', $sql);
+
+        $this->assertStringContainsString(
+            'LEFT JOIN other_table ON dummies.id = other_table.dummy_id',
+            $sql
+        );
     }
 }

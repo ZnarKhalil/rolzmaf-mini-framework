@@ -6,9 +6,9 @@
 ![PHP](https://img.shields.io/badge/php-8.4-blue)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Rolzmaf is a compact, modern PHP framework built from scratch for clarity and learning. It borrows proven ideas from the PHP ecosystem and demonstrates how a framework fits together end‑to‑end: routing, middleware, HTTP, ORM, and migrations — with straightforward, readable code.
+Rolzmaf is a compact PHP framework created for clarity and **learning**, intentionally inspired by the [Laravel](https://laravel.com) framework.
 
-Note: This project is educational by design. While many parts are production‑like, you should evaluate and harden before using in real systems.
+Note: Rolzmaf is educational. For production applications choose well-supported frameworks such as [Laravel](https://laravel.com) or [Symfony](https://symfony.com).
 
 ## Features
 

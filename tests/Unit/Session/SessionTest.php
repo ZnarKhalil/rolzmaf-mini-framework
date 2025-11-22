@@ -16,6 +16,12 @@ use PHPUnit\Framework\TestCase;
 #[TestDox('Session management')]
 final class SessionTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        Session::destroy();
+        parent::tearDown();
+    }
+
     #[Test]
     public function it_sets_and_gets_session_values(): void
     {
