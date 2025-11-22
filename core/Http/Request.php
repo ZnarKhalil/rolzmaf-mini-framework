@@ -37,7 +37,7 @@ class Request implements RequestInterface
 
         foreach ($_SERVER as $k => $v) {
             if (str_starts_with($k, 'HTTP_')) {
-                $name           = strtolower(str_replace('_', '-', substr($k, 5)));
+                $name = strtolower(str_replace('_', '-', substr($k, 5)));
                 $headers[$name] = $v;
             }
         }
@@ -81,5 +81,20 @@ class Request implements RequestInterface
     public function jsonError(): ?string
     {
         return $this->jsonError;
+    }
+
+    public function string(string $key, string $default = ''): string
+    {
+        return (string) $this->input($key, $default);
+    }
+
+    public function int(string $key, int $default = 0): int
+    {
+        return (int) $this->input($key, $default);
+    }
+
+    public function bool(string $key, bool $default = false): bool
+    {
+        return filter_var($this->input($key, $default), FILTER_VALIDATE_BOOLEAN);
     }
 }

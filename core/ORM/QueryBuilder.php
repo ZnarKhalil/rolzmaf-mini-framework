@@ -18,11 +18,11 @@ class QueryBuilder
     private Model $model;
 
     private array $columns = ['*'];
-    private array $joins   = [];
-    private array $wheres  = [];
-    private array $orders  = [];
-    private ?int $limit    = null;
-    private array $with    = [];
+    private array $joins = [];
+    private array $wheres = [];
+    private array $orders = [];
+    private ?int $limit = null;
+    private array $with = [];
 
     /**
      * @param TModel $model
@@ -30,7 +30,7 @@ class QueryBuilder
     public function __construct(Model $model, PDO $pdo)
     {
         $this->model = $model;
-        $this->pdo   = $pdo;
+        $this->pdo = $pdo;
     }
 
     public function select(string ...$columns): self
@@ -89,7 +89,7 @@ class QueryBuilder
         if (empty($values)) {
             $this->wheres[] = ['raw', '1 = 0', []];
         } else {
-            $placeholders   = implode(', ', array_fill(0, count($values), '?'));
+            $placeholders = implode(', ', array_fill(0, count($values), '?'));
             $this->wheres[] = ['raw', "$column IN ($placeholders)", $values];
         }
 
@@ -158,11 +158,16 @@ class QueryBuilder
 
     public function insert(array $data): bool
     {
-        $table        = $this->model::table();
-        $columns      = array_keys($data);
-        $placeholders = array_map(fn ($k) => ":$k", $columns);
-        $sql          = "INSERT INTO `$table` (" . implode(', ', $columns) . ') VALUES (' . implode(', ', $placeholders) . ')';
-        $stmt         = $this->pdo->prepare($sql);
+        $table = $this->model::table();
+        $columns = array_keys($data);
+
+        foreach ($columns as $column) {
+            $this->ensureValidColumn($column, 'insert');
+        }
+
+        $placeholders = array_map(fn($k) => ":$k", $columns);
+        $sql = "INSERT INTO `$table` (" . implode(', ', $columns) . ') VALUES (' . implode(', ', $placeholders) . ')';
+        $stmt = $this->pdo->prepare($sql);
 
         return $stmt->execute($data);
     }
@@ -173,17 +178,17 @@ class QueryBuilder
             throw new \LogicException('Update requires a WHERE clause to avoid mass update.');
         }
 
-        $table  = $this->model::table();
-        $set    = [];
+        $table = $this->model::table();
+        $set = [];
         $params = [];
 
         foreach ($data as $col => $val) {
             $this->ensureValidColumn($col, 'update');
-            $set[]    = "`$col` = ?";
+            $set[] = "`$col` = ?";
             $params[] = $val;
         }
 
-        $sql                         = "UPDATE `$table` SET " . implode(', ', $set);
+        $sql = "UPDATE `$table` SET " . implode(', ', $set);
         [$whereClause, $whereParams] = $this->buildWhereClause();
         $sql .= $whereClause;
         $params = array_merge($params, $whereParams);
@@ -197,9 +202,9 @@ class QueryBuilder
             throw new \LogicException('Delete requires a WHERE clause to avoid mass deletion.');
         }
 
-        $table                  = $this->model::table();
+        $table = $this->model::table();
         [$whereClause, $params] = $this->buildWhereClause();
-        $sql                    = "DELETE FROM `$table`" . $whereClause;
+        $sql = "DELETE FROM `$table`" . $whereClause;
 
         return $this->pdo->prepare($sql)->execute($params);
     }
@@ -207,21 +212,21 @@ class QueryBuilder
     private function buildWhereClause(): array
     {
         $clauses = [];
-        $params  = [];
+        $params = [];
 
         foreach ($this->wheres as $where) {
             $type = $where[0];
 
             if ($type === 'basic') {
                 [$column, $operator, $value] = array_slice($where, 1);
-                $clauses[]                   = "`$column` $operator ?";
-                $params[]                    = $value;
+                $clauses[] = "`$column` $operator ?";
+                $params[] = $value;
             }
 
             if ($type === 'raw') {
                 [$expr, $values] = array_slice($where, 1);
-                $clauses[]       = $expr;
-                $params          = array_merge($params, $values);
+                $clauses[] = $expr;
+                $params = array_merge($params, $values);
             }
         }
 
@@ -242,7 +247,7 @@ class QueryBuilder
         $sql .= $whereClause;
 
         if (!empty($this->orders)) {
-            $orders = array_map(fn ($o) => "`$o[0]` $o[1]", $this->orders);
+            $orders = array_map(fn($o) => "`$o[0]` $o[1]", $this->orders);
             $sql .= ' ORDER BY ' . implode(', ', $orders);
         }
 
@@ -254,7 +259,7 @@ class QueryBuilder
         $stmt->execute($params);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $models = array_map(fn ($row) => new ($this->model::class)($row), $rows);
+        $models = array_map(fn($row) => new ($this->model::class)($row), $rows);
 
         // Eager-load relations
         if (!empty($this->with)) {
@@ -266,15 +271,15 @@ class QueryBuilder
                 }
 
                 $relationInstance = $method();
-                $loaded           = $relationInstance->load($models);
+                $loaded = $relationInstance->load($models);
 
                 foreach ($models as $model) {
                     if ($relationInstance instanceof BelongsTo) {
-                        $fk                 = $model->{$relationInstance->foreignKey} ?? null;
-                        $model->{$relation} = $loaded[$fk]                            ?? null;
+                        $fk = $model->{$relationInstance->foreignKey} ?? null;
+                        $model->{$relation} = $loaded[$fk] ?? null;
                     } else {
-                        $key                = $model->{$relationInstance->localKey} ?? null;
-                        $model->{$relation} = $loaded[$key]                         ?? [];
+                        $key = $model->{$relationInstance->localKey} ?? null;
+                        $model->{$relation} = $loaded[$key] ?? [];
                     }
                 }
             }
@@ -295,7 +300,7 @@ class QueryBuilder
         $sql .= $whereClause;
 
         if (!empty($this->orders)) {
-            $orders = array_map(fn ($o) => "`$o[0]` $o[1]", $this->orders);
+            $orders = array_map(fn($o) => "`$o[0]` $o[1]", $this->orders);
             $sql .= ' ORDER BY ' . implode(', ', $orders);
         }
 

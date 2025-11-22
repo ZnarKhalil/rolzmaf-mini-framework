@@ -42,30 +42,44 @@ class HttpKernel
                 return new Response()->setStatus(404)->write('Controller or method not found');
             }
 
-            $instance = new $controller();
+            $container = \Core\Container\Container::getInstance();
+
+            // Bind the current request instance so it can be injected
+            $container->instance(RequestInterface::class, $req);
+            $container->instance(\Core\Http\Request::class, $req);
 
             try {
-                $refMethod = \ReflectionMethod::createFromMethodName("{$controller}::{$method}");
-                $params    = $refMethod->getParameters();
+                $instance = $container->make($controller);
 
-                if (count($params) === 0) {
-                    return $instance->$method();
+                // We still need to handle method injection for the action method itself
+                // The container resolves the constructor dependencies, but not the method call
+                // So we'll use the container to resolve method dependencies as well
+
+                $refMethod = new \ReflectionMethod($controller, $method);
+                $params = $refMethod->getParameters();
+                $args = [];
+
+                foreach ($params as $param) {
+                    $type = $param->getType();
+                    if ($type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
+                        $args[] = $container->make($type->getName());
+                    } else {
+                        // For simple types, we can't easily guess, but if it's a RequestInterface we already bound it.
+                        // If it's something else, we might need to rely on route parameters (not implemented yet in this simple router)
+                        // For now, we'll just leave it null or default
+                        if ($param->isDefaultValueAvailable()) {
+                            $args[] = $param->getDefaultValue();
+                        } else {
+                            $args[] = null;
+                        }
+                    }
                 }
 
-                $param = $params[0];
-                $type  = $param->getType();
+                return $refMethod->invokeArgs($instance, $args);
 
-                if ($type instanceof \ReflectionNamedType
-                    && !$type->isBuiltin()
-                    && is_a($type->getName(), RequestInterface::class, true)
-                ) {
-                    return $instance->$method($req);
-                }
-
-                // Fallback: call without arguments
-                return $instance->$method();
-            } catch (\ReflectionException $e) {
-                return new Response()->setStatus(500)->write('Failed to invoke controller');
+            } catch (\Exception $e) {
+                // In production, log this error
+                return new Response()->setStatus(500)->write('Failed to invoke controller: ' . $e->getMessage());
             }
         });
     }
